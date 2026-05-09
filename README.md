@@ -1,6 +1,6 @@
 # Academia Manager Frontend
 
-React dashboard for `AcademiaManager.Api`.
+Dashboard em React para a `AcademiaManager.Api`.
 
 ## Stack
 
@@ -13,20 +13,20 @@ React dashboard for `AcademiaManager.Api`.
 - React Hook Form + Zod
 - Tailwind CSS
 - Vitest + Testing Library
-- MSW and Playwright installed for next testing phases
+- MSW e Playwright instalados para as próximas fases de testes
 
-## Requirements
+## Requisitos
 
 - Node.js 24+
-- `AcademiaManager.Api` running at `http://localhost:5123`
+- `AcademiaManager.Api` rodando em `http://localhost:5123`
 
-Backend local path used during planning:
+Caminho local do backend usado durante o planejamento:
 
 ```txt
 C:\Users\pedro\AcademiaManagerApi
 ```
 
-## Setup
+## Instalação
 
 ```bash
 npm install
@@ -34,7 +34,7 @@ cp .env.example .env
 npm run dev
 ```
 
-Default frontend URL:
+URL padrão do frontend:
 
 ```txt
 http://localhost:5173
@@ -50,26 +50,26 @@ npm run test
 npm run format
 ```
 
-## Current Status
+## Status Atual
 
-Implemented:
+Implementado:
 
-- Vite React TypeScript scaffold
-- Tailwind CSS config
-- API client with JWT header and refresh retry
-- Redux auth session state
-- Login and register pages
-- Protected dashboard layout
-- Dashboard metric calls
-- Plans CRUD list/create/edit/delete
-- Admin-only plan write guards
-- Students CRUD list/create/edit/delete
-- Student plan selector and Admin/Trainer write guards
-- Trainings CRUD list/create/edit/delete
-- Training student selector and local datetime to UTC conversion
-- Base UI primitives
-- First validation and permission tests
+- Estrutura inicial com Vite, React e TypeScript
+- Configuração do Tailwind CSS
+- Cliente de API com header JWT e nova tentativa após refresh
+- Estado de sessão de autenticação com Redux
+- Páginas de login e cadastro
+- Layout protegido do dashboard
+- Chamadas para métricas do dashboard
+- CRUD de planos com listagem, criação, edição e exclusão
+- Proteções de escrita de planos somente para Admin
+- CRUD de alunos com listagem, criação, edição e exclusão
+- Seletor de plano do aluno e proteções de escrita para Admin/Trainer
+- CRUD de treinos com listagem, criação, edição e exclusão
+- Seletor de aluno no treino e conversão de data/hora local para UTC
+- Primitivos básicos de UI
+- Primeiros testes de validação e permissões
 
-Next slice:
+Próxima etapa:
 
-- Payments CRUD with student selector and Admin-only permissions.
+- CRUD de pagamentos com seletor de aluno e permissões somente para Admin.
