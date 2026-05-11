@@ -2,6 +2,17 @@
 
 Dashboard em React para a `AcademiaManager.Api`.
 
+O frontend implementa a camada de apresentacao da aplicacao, com autenticacao, protecao de rotas, formularios tipados, consultas HTTP e modulos de CRUD integrados ao backend.
+
+## Responsabilidades
+
+- autenticacao e persistencia de sessao no cliente
+- consumo da API REST via cliente HTTP centralizado
+- validacao de formularios antes do envio
+- protecao de telas por autenticacao e papel
+- exibicao de estados de loading, erro, vazio e sucesso
+- navegacao e composicao de telas por feature
+
 ## Stack
 
 - React 19 + TypeScript
@@ -14,6 +25,24 @@ Dashboard em React para a `AcademiaManager.Api`.
 - Tailwind CSS
 - Vitest + Testing Library
 - MSW e Playwright instalados para as proximas fases de testes
+
+## Arquitetura
+
+O frontend esta organizado por dominio funcional.
+
+- `src/app`: inicializacao da aplicacao, providers globais, layouts e roteamento
+- `src/features`: modulos como `auth`, `students`, `plans`, `trainings` e `payments`
+- `src/shared`: componentes reutilizaveis, cliente HTTP, hooks, helpers e configuracoes comuns
+- `docs`: contrato da API, arquitetura, escopo e decisoes de implementacao
+
+Padroes principais:
+
+- feature-first organization
+- cliente HTTP centralizado
+- estado remoto com TanStack Query
+- estado de autenticacao com Redux Toolkit
+- formularios com React Hook Form + Zod
+- componentes reutilizaveis em `shared/ui`
 
 ## Requisitos
 
@@ -40,6 +69,14 @@ Conteudo esperado do `.env`:
 VITE_API_BASE_URL=http://localhost:5123
 ```
 
+## Integracao com o backend
+
+- a base URL da API e controlada por `VITE_API_BASE_URL`
+- o frontend consome endpoints REST expostos pela `AcademiaManager.Api`
+- autenticacao usa `accessToken` e `refreshToken`
+- rotas protegidas dependem do estado autenticado e do papel retornado pela API
+- erros de API sao normalizados antes de chegar nas telas
+
 URL padrao do frontend:
 
 ```txt
@@ -52,6 +89,14 @@ http://localhost:5173
 2. Rode `npm run dev`.
 3. Acesse `http://localhost:5173`.
 4. Use o Swagger do backend para validar contratos e payloads.
+
+## Execucao local
+
+```powershell
+Copy-Item .env.example .env
+npm install
+npm run dev
+```
 
 ## Scripts
 
@@ -85,9 +130,7 @@ docs/
 - `src/features`: modulos de dominio como auth, students, plans, trainings e payments
 - `src/shared`: cliente HTTP, utilitarios e componentes reutilizaveis
 
-## Status atual
-
-Implementado:
+## Funcionalidades implementadas
 
 - Estrutura inicial com Vite, React e TypeScript
 - Configuracao do Tailwind CSS
@@ -101,9 +144,16 @@ Implementado:
 - Filtros e ordenacao por URL em partes da aplicacao
 - Testes unitarios e de comportamento para fluxos principais
 
-## Validacao
+## Validacao tecnica
 
 ```powershell
+npm run lint
 npm run build
 npm run test
 ```
+
+## Observacoes tecnicas
+
+- o frontend depende da disponibilidade do backend em `http://localhost:5123`
+- o contrato principal de referencia esta em `docs/api-contract.md`
+- o fluxo de autenticacao e um dos pontos centrais da aplicacao e deve permanecer isolado em modulos compartilhados
