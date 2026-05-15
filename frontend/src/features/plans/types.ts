@@ -5,6 +5,8 @@ export type PlanResponse = {
   priceCurrency: string
   durationInDays: number
   isActive: boolean
+  createdAtUtc?: string
+  updatedAtUtc?: string | null
 }
 
 export type CreatePlanRequest = {

@@ -7,6 +7,8 @@ export type StudentResponse = {
   phone?: string | null
   status: StudentStatus
   planId?: string | null
+  createdAtUtc?: string
+  updatedAtUtc?: string | null
 }
 
 export type CreateStudentRequest = {

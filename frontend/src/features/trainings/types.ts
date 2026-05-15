@@ -4,6 +4,8 @@ export type TrainingResponse = {
   title: string
   description: string
   scheduledForUtc: string
+  createdAtUtc?: string
+  updatedAtUtc?: string | null
 }
 
 export type CreateTrainingRequest = {

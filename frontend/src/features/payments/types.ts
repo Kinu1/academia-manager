@@ -8,6 +8,8 @@ export type PaymentResponse = {
   dueDateUtc: string
   paidAtUtc?: string | null
   status: PaymentStatus
+  createdAtUtc?: string
+  updatedAtUtc?: string | null
 }
 
 export type CreatePaymentRequest = {
