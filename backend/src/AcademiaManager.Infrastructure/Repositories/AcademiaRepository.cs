@@ -17,6 +17,12 @@ public sealed class AcademiaRepository : IAcademiaRepository
     public Task<Student?> GetStudentAsync(Guid id, CancellationToken cancellationToken)
         => _db.Students.FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
 
+    public Task<Student?> GetStudentByEmailAsync(string email, CancellationToken cancellationToken)
+        => _db.Students.FirstOrDefaultAsync(x => x.Email == email, cancellationToken);
+
+    public Task<Student?> GetStudentByUserIdAsync(Guid userId, CancellationToken cancellationToken)
+        => _db.Students.FirstOrDefaultAsync(x => x.UserId == userId, cancellationToken);
+
     public async Task AddStudentAsync(Student student, CancellationToken cancellationToken)
         => await _db.Students.AddAsync(student, cancellationToken);
 
@@ -46,6 +52,9 @@ public sealed class AcademiaRepository : IAcademiaRepository
 
     public async Task<(IReadOnlyList<Payment> Items, int Total)> ListPaymentsAsync(int page, int perPage, CancellationToken cancellationToken)
         => await PageAsync(_db.Payments.AsNoTracking().OrderByDescending(x => x.DueDateUtc), page, perPage, cancellationToken);
+
+    public async Task<(IReadOnlyList<Payment> Items, int Total)> ListPaymentsByStudentIdAsync(Guid studentId, int page, int perPage, CancellationToken cancellationToken)
+        => await PageAsync(_db.Payments.AsNoTracking().Where(x => x.StudentId == studentId).OrderByDescending(x => x.DueDateUtc), page, perPage, cancellationToken);
 
     public Task<Payment?> GetPaymentAsync(Guid id, CancellationToken cancellationToken)
         => _db.Payments.FirstOrDefaultAsync(x => x.Id == id, cancellationToken);

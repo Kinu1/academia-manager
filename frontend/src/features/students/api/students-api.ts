@@ -23,6 +23,16 @@ export async function getStudent(id: string) {
   return response.data.data
 }
 
+export async function getCurrentStudent() {
+  const response = await httpClient.get<ApiResponse<StudentResponse>>('/api/v1/students/me')
+  return response.data.data
+}
+
+export async function chooseCurrentStudentPlan(planId: string) {
+  const response = await httpClient.put<ApiResponse<StudentResponse>>('/api/v1/students/me/plan', { planId })
+  return response.data.data
+}
+
 export async function createStudent(request: CreateStudentRequest) {
   const response = await httpClient.post<ApiResponse<StudentResponse>>('/api/v1/students', request)
   return response.data.data

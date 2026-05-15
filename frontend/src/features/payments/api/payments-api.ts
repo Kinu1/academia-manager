@@ -18,6 +18,17 @@ export async function listPayments(params: ListPaymentsParams = {}) {
   return response.data
 }
 
+export async function listCurrentStudentPayments(params: ListPaymentsParams = {}) {
+  const response = await httpClient.get<PagedResult<PaymentResponse>>('/api/v1/students/me/payments', {
+    params: {
+      page: params.page ?? 1,
+      perPage: params.perPage ?? 10,
+    },
+  })
+
+  return response.data
+}
+
 export async function getPayment(id: string) {
   const response = await httpClient.get<ApiResponse<PaymentResponse>>(`/api/v1/payments/${id}`)
   return response.data.data

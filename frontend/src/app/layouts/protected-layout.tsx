@@ -5,6 +5,13 @@ import { NavLink, Outlet, useNavigate } from 'react-router-dom'
 import { Badge } from '../../shared/ui/badge'
 import { useAuth } from '../../features/auth/hooks/use-auth'
 import { SESSION_EXPIRED_EVENT } from '../../features/auth/model/auth-events'
+import {
+  canManageStudents,
+  canManageTrainings,
+  canViewOwnPayments,
+  canViewPayments,
+  getRoleLabel,
+} from '../../shared/lib/permissions'
 import { useToast } from '../../shared/ui/toast-context'
 
 const navItems = [
@@ -19,6 +26,13 @@ export function ProtectedLayout() {
   const { user, logout } = useAuth()
   const navigate = useNavigate()
   const { showToast } = useToast()
+  const visibleNavItems = navItems.filter((item) => {
+    if (item.to === '/') return user?.role !== 'Student'
+    if (item.to === '/students') return canManageStudents(user?.role)
+    if (item.to === '/trainings') return canManageTrainings(user?.role)
+    if (item.to === '/payments') return canViewPayments(user?.role) || canViewOwnPayments(user?.role)
+    return true
+  })
 
   useEffect(() => {
     function handleSessionExpired() {
@@ -50,7 +64,7 @@ export function ProtectedLayout() {
         </div>
 
         <nav className="mt-8 space-y-1" aria-label="Navegação principal">
-          {navItems.map((item) => (
+          {visibleNavItems.map((item) => (
             <NavLink
               key={item.to}
               to={item.to}
@@ -75,7 +89,7 @@ export function ProtectedLayout() {
             <p className="text-xs text-slate-500">{user?.email}</p>
           </div>
           <div className="flex items-center gap-3">
-            <Badge tone="success">{user?.role}</Badge>
+            <Badge tone="success">{getRoleLabel(user?.role)}</Badge>
             <button
               className="inline-flex h-9 w-9 items-center justify-center rounded-md text-slate-500 hover:bg-slate-100 hover:text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-200"
               onClick={() => {
@@ -95,7 +109,7 @@ export function ProtectedLayout() {
           aria-label="Navegação principal mobile"
         >
           <div className="flex gap-2 overflow-x-auto pb-1">
-            {navItems.map((item) => (
+            {visibleNavItems.map((item) => (
               <NavLink
                 key={item.to}
                 to={item.to}

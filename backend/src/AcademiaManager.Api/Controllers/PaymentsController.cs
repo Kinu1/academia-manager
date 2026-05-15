@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace AcademiaManager.Api.Controllers;
 
-[Authorize]
+[Authorize(Roles = "Admin")]
 [Route("api/v1/payments")]
 public sealed class PaymentsController : BaseApiController
 {
@@ -23,7 +23,6 @@ public sealed class PaymentsController : BaseApiController
         return payment is null ? NotFoundError("payment_not_found", "Payment not found.") : OkData(payment);
     }
 
-    [Authorize(Roles = "Admin")]
     [HttpPost]
     public async Task<IActionResult> Create(CreatePaymentRequest request, CancellationToken cancellationToken)
     {
@@ -31,7 +30,6 @@ public sealed class PaymentsController : BaseApiController
         return CreatedData(nameof(GetById), new { id = payment.Id }, payment);
     }
 
-    [Authorize(Roles = "Admin")]
     [HttpPut("{id:guid}")]
     public async Task<IActionResult> Update(Guid id, UpdatePaymentRequest request, CancellationToken cancellationToken)
     {
@@ -39,7 +37,6 @@ public sealed class PaymentsController : BaseApiController
         return payment is null ? NotFoundError("payment_not_found", "Payment not found.") : OkData(payment);
     }
 
-    [Authorize(Roles = "Admin")]
     [HttpDelete("{id:guid}")]
     public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken)
         => await _service.DeletePaymentAsync(id, cancellationToken)

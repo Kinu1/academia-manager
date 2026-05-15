@@ -6,6 +6,8 @@ public interface IAcademiaRepository
 {
     Task<(IReadOnlyList<Student> Items, int Total)> ListStudentsAsync(int page, int perPage, CancellationToken cancellationToken);
     Task<Student?> GetStudentAsync(Guid id, CancellationToken cancellationToken);
+    Task<Student?> GetStudentByEmailAsync(string email, CancellationToken cancellationToken);
+    Task<Student?> GetStudentByUserIdAsync(Guid userId, CancellationToken cancellationToken);
     Task AddStudentAsync(Student student, CancellationToken cancellationToken);
     void RemoveStudent(Student student);
 
@@ -20,6 +22,7 @@ public interface IAcademiaRepository
     void RemoveTraining(Training training);
 
     Task<(IReadOnlyList<Payment> Items, int Total)> ListPaymentsAsync(int page, int perPage, CancellationToken cancellationToken);
+    Task<(IReadOnlyList<Payment> Items, int Total)> ListPaymentsByStudentIdAsync(Guid studentId, int page, int perPage, CancellationToken cancellationToken);
     Task<Payment?> GetPaymentAsync(Guid id, CancellationToken cancellationToken);
     Task AddPaymentAsync(Payment payment, CancellationToken cancellationToken);
     void RemovePayment(Payment payment);

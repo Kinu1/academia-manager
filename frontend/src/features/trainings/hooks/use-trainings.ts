@@ -17,10 +17,11 @@ export const trainingKeys = {
   detail: (id: string) => [...trainingKeys.all, 'detail', id] as const,
 }
 
-export function useTrainings(params: ListTrainingsParams) {
+export function useTrainings(params: ListTrainingsParams, options?: { enabled?: boolean }) {
   return useQuery({
     queryKey: trainingKeys.list(params),
     queryFn: () => listTrainings(params),
+    enabled: options?.enabled ?? true,
   })
 }
 

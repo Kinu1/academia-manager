@@ -10,10 +10,11 @@ export const planKeys = {
   detail: (id: string) => [...planKeys.all, 'detail', id] as const,
 }
 
-export function usePlans(params: ListPlansParams) {
+export function usePlans(params: ListPlansParams, options?: { enabled?: boolean }) {
   return useQuery({
     queryKey: planKeys.list(params),
     queryFn: () => listPlans(params),
+    enabled: options?.enabled ?? true,
   })
 }
 

@@ -1,18 +1,18 @@
 import { Download, Plus, RefreshCw } from 'lucide-react'
 import { useState } from 'react'
-import { Link, useSearchParams } from 'react-router-dom'
+import { Link, Navigate, useSearchParams } from 'react-router-dom'
 
 import { toApiError } from '../../../shared/api/api-error'
 import { downloadCsv, toCsv } from '../../../shared/lib/csv'
 import { formatCurrency, formatDateTime } from '../../../shared/lib/formatters'
-import { canManagePayments } from '../../../shared/lib/permissions'
+import { canManagePayments, canViewOwnPayments, canViewPayments } from '../../../shared/lib/permissions'
 import { Button } from '../../../shared/ui/button'
 import { ConfirmDialog } from '../../../shared/ui/confirm-dialog'
 import { useToast } from '../../../shared/ui/toast-context'
 import { useAuth } from '../../auth/hooks/use-auth'
-import { useStudents } from '../../students/hooks/use-students'
+import { useCurrentStudent, useStudents } from '../../students/hooks/use-students'
 import { PaymentsTable } from '../components/payments-table'
-import { useDeletePayment, usePayments } from '../hooks/use-payments'
+import { useCurrentStudentPayments, useDeletePayment, usePayments } from '../hooks/use-payments'
 import {
   filterPayments,
   sortPayments,
@@ -35,12 +35,20 @@ export function PaymentsPage() {
   const filters = getPaymentFiltersFromSearchParams(searchParams)
   const { user } = useAuth()
   const canManage = canManagePayments(user?.role)
-  const paymentsQuery = usePayments({ page: filters.page, perPage: filters.perPage })
-  const studentsQuery = useStudents({ page: 1, perPage: 100 })
+  const canViewOperational = canViewPayments(user?.role)
+  const isStudent = canViewOwnPayments(user?.role)
+  const paymentsQuery = usePayments({ page: filters.page, perPage: filters.perPage }, { enabled: canViewOperational })
+  const currentPaymentsQuery = useCurrentStudentPayments({ page: filters.page, perPage: filters.perPage }, { enabled: isStudent })
+  const studentsQuery = useStudents({ page: 1, perPage: 100 }, { enabled: canViewOperational })
+  const currentStudentQuery = useCurrentStudent({ enabled: isStudent })
   const deletePayment = useDeletePayment()
   const [deletingId, setDeletingId] = useState<string>()
   const [confirmDeleteId, setConfirmDeleteId] = useState<string>()
   const { showToast } = useToast()
+
+  if (!canViewOperational && !isStudent) {
+    return <Navigate to="/plans" replace />
+  }
 
   async function handleDelete(id: string) {
     setDeletingId(id)
@@ -59,10 +67,12 @@ export function PaymentsPage() {
     }
   }
 
-  const hasError = paymentsQuery.isError || studentsQuery.isError
+  const activePaymentsQuery = isStudent ? currentPaymentsQuery : paymentsQuery
+  const students = isStudent ? (currentStudentQuery.data ? [currentStudentQuery.data] : []) : studentsQuery.data?.data ?? []
+  const hasError = activePaymentsQuery.isError || (isStudent ? currentStudentQuery.isError : studentsQuery.isError)
   const filteredPayments =
-    paymentsQuery.data && studentsQuery.data
-      ? sortPayments(filterPayments(paymentsQuery.data.data, studentsQuery.data.data, filters), studentsQuery.data.data, filters)
+    activePaymentsQuery.data && students.length > 0
+      ? sortPayments(filterPayments(activePaymentsQuery.data.data, students, filters), students, filters)
       : []
 
   function updateFilters(nextFilters: PaymentFilters) {
@@ -74,7 +84,7 @@ export function PaymentsPage() {
   }
 
   function handleExportCsv() {
-    const studentNames = new Map((studentsQuery.data?.data ?? []).map((student) => [student.id, student.name]))
+    const studentNames = new Map(students.map((student) => [student.id, student.name]))
     const csv = toCsv(
       [
         { header: 'Aluno', value: (payment) => studentNames.get(payment.studentId) ?? 'Aluno removido' },
@@ -123,7 +133,7 @@ export function PaymentsPage() {
         </div>
       </div>
 
-      {paymentsQuery.isLoading || studentsQuery.isLoading ? (
+      {activePaymentsQuery.isLoading || (isStudent ? currentStudentQuery.isLoading : studentsQuery.isLoading) ? (
         <div className="rounded-lg border border-slate-200 bg-white p-6 text-sm text-slate-600 shadow-sm">
           Carregando pagamentos...
         </div>
@@ -135,8 +145,9 @@ export function PaymentsPage() {
           <Button
             className="mt-4 gap-2"
             onClick={() => {
-              paymentsQuery.refetch()
-              studentsQuery.refetch()
+              activePaymentsQuery.refetch()
+              if (isStudent) currentStudentQuery.refetch()
+              else studentsQuery.refetch()
             }}
             type="button"
           >
@@ -146,13 +157,13 @@ export function PaymentsPage() {
         </div>
       ) : null}
 
-      {paymentsQuery.data && paymentsQuery.data.total === 0 ? (
+      {activePaymentsQuery.data && activePaymentsQuery.data.total === 0 ? (
         <div className="rounded-lg border border-slate-200 bg-white p-6 text-sm text-slate-600 shadow-sm">
           Nenhum pagamento cadastrado.
         </div>
       ) : null}
 
-      {paymentsQuery.data && paymentsQuery.data.total > 0 && studentsQuery.data ? (
+      {activePaymentsQuery.data && activePaymentsQuery.data.total > 0 && students.length > 0 ? (
         <>
           <section className="grid gap-3 rounded-lg border border-slate-200 bg-white p-4 shadow-sm md:grid-cols-[1fr_180px_180px_160px]">
             <label className="block space-y-1.5">
@@ -230,7 +241,7 @@ export function PaymentsPage() {
             <div className="overflow-x-auto">
               <PaymentsTable
                 payments={filteredPayments}
-                students={studentsQuery.data.data}
+                students={students}
                 canManage={canManage}
                 deletingId={deletingId}
                 onDelete={setConfirmDeleteId}
@@ -240,7 +251,7 @@ export function PaymentsPage() {
 
           <div className="flex items-center justify-between text-sm text-slate-600">
             <span>
-              Página {paymentsQuery.data.page} de {paymentsQuery.data.totalPages || 1}
+              Página {activePaymentsQuery.data.page} de {activePaymentsQuery.data.totalPages || 1}
             </span>
             <div className="flex items-center gap-2">
               <label className="flex items-center gap-2">
@@ -266,7 +277,7 @@ export function PaymentsPage() {
               <Button
                 type="button"
                 className="bg-white text-slate-700 ring-1 ring-slate-200 hover:bg-slate-50"
-                disabled={filters.page >= paymentsQuery.data.totalPages}
+                disabled={filters.page >= activePaymentsQuery.data.totalPages}
                 onClick={() => updatePagination({ page: filters.page + 1 })}
               >
                 Próxima

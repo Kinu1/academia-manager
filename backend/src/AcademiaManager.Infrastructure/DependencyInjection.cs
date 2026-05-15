@@ -6,6 +6,7 @@ using AcademiaManager.Infrastructure.Data;
 using AcademiaManager.Infrastructure.Repositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
@@ -46,6 +47,7 @@ public static class DependencyInjection
             if (provider.Equals("Sqlite", StringComparison.OrdinalIgnoreCase))
             {
                 options.UseSqlite(connectionString ?? "Data Source=academia-manager-dev.db");
+                options.ConfigureWarnings(w => w.Ignore(RelationalEventId.PendingModelChangesWarning));
                 return;
             }
 

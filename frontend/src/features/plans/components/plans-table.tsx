@@ -1,4 +1,4 @@
-import { Edit, Trash2 } from 'lucide-react'
+import { CheckCircle2, Edit, Trash2 } from 'lucide-react'
 import { Link } from 'react-router-dom'
 
 import { formatCurrency } from '../../../shared/lib/formatters'
@@ -8,11 +8,14 @@ import type { PlanResponse } from '../types'
 type PlansTableProps = {
   plans: PlanResponse[]
   canManage: boolean
+  currentPlanId?: string | null
+  choosingPlanId?: string
   deletingId?: string
+  onChoose?: (id: string) => void
   onDelete: (id: string) => void
 }
 
-export function PlansTable({ plans, canManage, deletingId, onDelete }: PlansTableProps) {
+export function PlansTable({ plans, canManage, currentPlanId, choosingPlanId, deletingId, onChoose, onDelete }: PlansTableProps) {
   return (
     <div className="overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm">
       <table className="w-full min-w-[720px] border-collapse text-left text-sm">
@@ -36,22 +39,34 @@ export function PlansTable({ plans, canManage, deletingId, onDelete }: PlansTabl
               </td>
               <td className="px-4 py-3">
                 <div className="flex justify-end gap-2">
-                  <Link
-                    className="inline-flex h-9 w-9 items-center justify-center rounded-md text-slate-600 hover:bg-slate-100"
-                    to={`/plans/${plan.id}`}
-                    aria-label={`Editar ${plan.name}`}
-                  >
-                    <Edit size={17} />
-                  </Link>
                   {canManage ? (
+                    <>
+                      <Link
+                        className="inline-flex h-9 w-9 items-center justify-center rounded-md text-slate-600 hover:bg-slate-100"
+                        to={`/plans/${plan.id}`}
+                        aria-label={`Editar ${plan.name}`}
+                      >
+                        <Edit size={17} />
+                      </Link>
+                      <button
+                        className="inline-flex h-9 w-9 items-center justify-center rounded-md text-red-600 hover:bg-slate-100 hover:text-red-600 focus-visible:text-red-600 disabled:opacity-50"
+                        onClick={() => onDelete(plan.id)}
+                        type="button"
+                        disabled={deletingId === plan.id}
+                        aria-label={`Excluir ${plan.name}`}
+                      >
+                        <Trash2 size={17} />
+                      </button>
+                    </>
+                  ) : onChoose ? (
                     <button
-                      className="inline-flex h-9 w-9 items-center justify-center rounded-md text-red-600 hover:bg-slate-100 hover:text-red-600 focus-visible:text-red-600 disabled:opacity-50"
-                      onClick={() => onDelete(plan.id)}
+                      className="inline-flex h-9 items-center justify-center gap-2 rounded-md px-3 text-sm font-medium text-emerald-700 hover:bg-emerald-50 disabled:cursor-not-allowed disabled:opacity-60"
+                      onClick={() => onChoose(plan.id)}
                       type="button"
-                      disabled={deletingId === plan.id}
-                      aria-label={`Excluir ${plan.name}`}
+                      disabled={!plan.isActive || currentPlanId === plan.id || choosingPlanId === plan.id}
                     >
-                      <Trash2 size={17} />
+                      <CheckCircle2 size={17} />
+                      {currentPlanId === plan.id ? 'Atual' : choosingPlanId === plan.id ? 'Selecionando...' : 'Escolher'}
                     </button>
                   ) : null}
                 </div>

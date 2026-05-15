@@ -1,17 +1,17 @@
 # Academia Manager API
 
-API em ASP.NET Core para autenticacao e gestao de alunos, planos, treinos e pagamentos da aplicacao Academia Manager.
+API em ASP.NET Core para autenticação e gestão de alunos, planos, treinos e pagamentos da aplicação Academia Manager.
 
-O backend expone uma API REST consumida pelo frontend do mesmo workspace e concentra regras de negocio, persistencia, autenticacao e composicao da aplicacao.
+O backend expõe uma API REST consumida pelo frontend do mesmo workspace e concentra regras de negócio, persistência, autenticação e composição da aplicação.
 
 ## Responsabilidades
 
-- autenticacao com JWT
+- autenticação com JWT
 - gerenciamento de alunos, planos, treinos e pagamentos
-- validacao de entrada
-- persistencia em PostgreSQL
-- exposicao de endpoints HTTP e contrato OpenAPI
-- execucao de migrations e testes
+- validação de entrada
+- persistência em PostgreSQL
+- exposição de endpoints HTTP e contrato OpenAPI
+- execução de migrations e testes
 
 ## Stack
 
@@ -35,31 +35,31 @@ backend/
 
 ### Camadas
 
-- `AcademiaManager.Api`: controllers, middleware, bootstrap e configuracao HTTP
-- `AcademiaManager.Application`: servicos de aplicacao, DTOs, interfaces e validacoes
+- `AcademiaManager.Api`: controllers, middleware, bootstrap e configuração HTTP
+- `AcademiaManager.Application`: serviços de aplicação, DTOs, interfaces e validações
 - `AcademiaManager.Domain`: entidades, enums e value objects
-- `AcademiaManager.Infrastructure`: acesso ao banco, autenticacao JWT, repositorios e migrations
+- `AcademiaManager.Infrastructure`: acesso ao banco, autenticação JWT, repositórios e migrations
 
-Esse desenho separa regra de negocio, detalhes de infraestrutura e entrega HTTP.
+Essa organização separa as regras de negócio, os detalhes de infraestrutura e a camada de entrega HTTP.
 
 ## Supabase PostgreSQL
 
-O backend usa PostgreSQL via Npgsql/EF Core. Nao coloque senha do Supabase em `appsettings.json`.
+O backend usa PostgreSQL via Npgsql/EF Core. Não coloque a senha do Supabase em `appsettings.json`.
 
-## Pre-requisitos
+## Pré-requisitos
 
 - .NET SDK 9
-- Banco PostgreSQL acessivel
+- banco PostgreSQL acessível
 - `Jwt:Secret` com pelo menos 32 caracteres
 
-## Configuracao local recomendada
+## Configuração local recomendada
 
 ```powershell
 dotnet user-secrets set "ConnectionStrings:DefaultConnection" "Host=aws-0-sa-east-1.pooler.supabase.com;Port=6543;Database=postgres;Username=postgres.<project-ref>;Password=<password>;Ssl Mode=Require;Trust Server Certificate=true" --project src\AcademiaManager.Api
 dotnet user-secrets set "Jwt:Secret" "<minimo-32-caracteres-aleatorios>" --project src\AcademiaManager.Api
 ```
 
-Em producao, use variaveis de ambiente:
+Em produção, use variáveis de ambiente:
 
 ```text
 ConnectionStrings__DefaultConnection=Host=...;Port=6543;Database=postgres;Username=postgres.<project-ref>;Password=...;Ssl Mode=Require;Trust Server Certificate=true
@@ -67,15 +67,15 @@ Jwt__Secret=<minimo-32-caracteres-aleatorios>
 Database__Provider=Postgres
 ```
 
-## Pipeline de inicializacao
+## Pipeline de inicialização
 
-Na subida da API:
+Durante a inicialização da API:
 
-- configuracao e carregada
-- autenticacao JWT e registrada
-- banco e provider sao resolvidos
-- migrations sao aplicadas no startup
-- endpoints e middlewares sao expostos
+- a configuração é carregada
+- a autenticação JWT é registrada
+- o banco e o provider são resolvidos
+- as migrations são aplicadas no startup
+- os endpoints e middlewares são expostos
 
 ## Rodar localmente
 
@@ -90,7 +90,7 @@ dotnet run --project src\AcademiaManager.Api --urls http://localhost:5123
 - Swagger: `http://localhost:5123/swagger`
 - OpenAPI JSON: `http://localhost:5123/swagger/v1/swagger.json`
 
-O Swagger deve ser usado como referencia local para payloads, respostas e testes manuais.
+O Swagger deve ser usado como referência local para payloads, respostas e testes manuais.
 
 ## Build e testes
 
@@ -101,10 +101,10 @@ dotnet test AcademiaManagerApi.sln
 
 ## Fluxo de dados
 
-- controllers recebem a requisicao
-- DTOs e validadores processam entrada
-- servicos de aplicacao orquestram casos de uso
-- repositorios e `AppDbContext` persistem dados
+- os controllers recebem a requisição
+- DTOs e validadores processam a entrada
+- os serviços de aplicação orquestram os casos de uso
+- os repositórios e o `AppDbContext` persistem os dados
 - a resposta volta em formato consistente para o frontend
 
 ## Migrations
@@ -113,9 +113,9 @@ dotnet test AcademiaManagerApi.sln
 dotnet ef database update --project src\AcademiaManager.Infrastructure --startup-project src\AcademiaManager.Api
 ```
 
-## Observacoes
+## Observações
 
-- A API nao deve iniciar em producao sem `Jwt:Secret` valido.
-- O provider padrao atual e PostgreSQL.
+- A API não deve iniciar em produção sem `Jwt:Secret` válido.
+- O provider padrão atual é PostgreSQL.
 - O frontend deste workspace espera a API em `http://localhost:5123`.
-- O backend ja possui testes unitarios e estrutura pronta para evolucao de testes de integracao.
+- O backend já possui testes unitários e estrutura pronta para a evolução dos testes de integração.

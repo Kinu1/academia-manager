@@ -1,8 +1,8 @@
 import { ArrowLeft, CalendarClock, Edit, History, Mail, Phone, Plus, Receipt, Route, WalletCards } from 'lucide-react'
-import { Link, useParams } from 'react-router-dom'
+import { Link, Navigate, useParams } from 'react-router-dom'
 
 import { formatCurrency, formatDateTime } from '../../../shared/lib/formatters'
-import { canManageStudents } from '../../../shared/lib/permissions'
+import { canManagePayments, canManageStudents } from '../../../shared/lib/permissions'
 import { Badge } from '../../../shared/ui/badge'
 import { Button } from '../../../shared/ui/button'
 import { PageHeader } from '../../../shared/ui/page-header'
@@ -46,16 +46,21 @@ export function StudentDetailPage() {
   const { id } = useParams()
   const { user } = useAuth()
   const canEdit = canManageStudents(user?.role)
-  const studentQuery = useStudent(id)
-  const plansQuery = usePlans({ page: 1, perPage: 100 })
-  const trainingsQuery = useTrainings({ page: 1, perPage: 100 })
-  const paymentsQuery = usePayments({ page: 1, perPage: 100 })
+  const canViewFinancial = canManagePayments(user?.role)
+  const studentQuery = useStudent(id, { enabled: canEdit })
+  const plansQuery = usePlans({ page: 1, perPage: 100 }, { enabled: canEdit })
+  const trainingsQuery = useTrainings({ page: 1, perPage: 100 }, { enabled: canEdit })
+  const paymentsQuery = usePayments({ page: 1, perPage: 100 }, { enabled: canViewFinancial })
 
-  const isLoading = studentQuery.isLoading || plansQuery.isLoading || trainingsQuery.isLoading || paymentsQuery.isLoading
-  const isError = studentQuery.isError || plansQuery.isError || trainingsQuery.isError || paymentsQuery.isError
+  if (!canEdit) {
+    return <Navigate to="/plans" replace />
+  }
+
+  const isLoading = studentQuery.isLoading || plansQuery.isLoading || trainingsQuery.isLoading || (canViewFinancial && paymentsQuery.isLoading)
+  const isError = studentQuery.isError || plansQuery.isError || trainingsQuery.isError || (canViewFinancial && paymentsQuery.isError)
   const detail =
-    studentQuery.data && plansQuery.data && trainingsQuery.data && paymentsQuery.data
-      ? getStudentDetailData(studentQuery.data, plansQuery.data.data, trainingsQuery.data.data, paymentsQuery.data.data)
+    studentQuery.data && plansQuery.data && trainingsQuery.data
+      ? getStudentDetailData(studentQuery.data, plansQuery.data.data, trainingsQuery.data.data, canViewFinancial ? paymentsQuery.data?.data ?? [] : [])
       : null
 
   return (
@@ -80,7 +85,7 @@ export function StudentDetailPage() {
               studentQuery.refetch()
               plansQuery.refetch()
               trainingsQuery.refetch()
-              paymentsQuery.refetch()
+              if (canViewFinancial) paymentsQuery.refetch()
             }}
             type="button"
           >
@@ -89,12 +94,24 @@ export function StudentDetailPage() {
         </SurfaceCard>
       ) : null}
 
-      {studentQuery.data && detail ? <StudentProfile student={studentQuery.data} detail={detail} canEdit={canEdit} /> : null}
+      {studentQuery.data && detail ? (
+        <StudentProfile student={studentQuery.data} detail={detail} canEdit={canEdit} canViewFinancial={canViewFinancial} />
+      ) : null}
     </div>
   )
 }
 
-function StudentProfile({ student, detail, canEdit }: { student: StudentResponse; detail: StudentDetail; canEdit: boolean }) {
+function StudentProfile({
+  student,
+  detail,
+  canEdit,
+  canViewFinancial,
+}: {
+  student: StudentResponse
+  detail: StudentDetail
+  canEdit: boolean
+  canViewFinancial: boolean
+}) {
   return (
     <>
       <PageHeader
@@ -114,7 +131,7 @@ function StudentProfile({ student, detail, canEdit }: { student: StudentResponse
             </span>
           </>
         }
-        actions={canEdit ? <StudentActions studentId={student.id} /> : null}
+        actions={canEdit ? <StudentActions studentId={student.id} canViewFinancial={canViewFinancial} /> : null}
       />
 
       <section className="grid gap-4 lg:grid-cols-4">
@@ -126,31 +143,35 @@ function StudentProfile({ student, detail, canEdit }: { student: StudentResponse
           description={detail.nextTraining ? `Próximo: ${formatDateTime(detail.nextTraining.scheduledForUtc)}` : 'Nenhum treino futuro'}
           tone="blue"
         />
-        <StatCard
+        {canViewFinancial ? (
+          <>
+            <StatCard
           icon={Receipt}
           label="Pendências"
           value={detail.pendingPayments.length + detail.overduePayments.length}
           description={`${detail.overduePayments.length} atrasado(s)`}
           tone={detail.overduePayments.length > 0 ? 'red' : 'amber'}
         />
-        <StatCard
+            <StatCard
           icon={WalletCards}
           label="Total pago"
           value={formatCurrency(detail.totalPaid)}
           description="Histórico financeiro recebido"
-        />
+            />
+          </>
+        ) : null}
       </section>
 
       <section className="grid gap-4 xl:grid-cols-3">
         <StudentTimeline items={detail.timeline} />
         <StudentTrainings trainings={detail.trainings} />
-        <StudentPayments payments={detail.payments} />
+        {canViewFinancial ? <StudentPayments payments={detail.payments} /> : null}
       </section>
     </>
   )
 }
 
-function StudentActions({ studentId }: { studentId: string }) {
+function StudentActions({ studentId, canViewFinancial }: { studentId: string; canViewFinancial: boolean }) {
   return (
     <>
       <Link
@@ -160,13 +181,15 @@ function StudentActions({ studentId }: { studentId: string }) {
         <Plus size={17} />
         Novo treino
       </Link>
-      <Link
-        className="inline-flex h-10 items-center justify-center gap-2 rounded-md bg-white px-4 text-sm font-medium text-slate-700 ring-1 ring-slate-200 hover:bg-slate-50"
-        to={`/payments/new?studentId=${studentId}`}
-      >
-        <Plus size={17} />
-        Novo pagamento
-      </Link>
+      {canViewFinancial ? (
+        <Link
+          className="inline-flex h-10 items-center justify-center gap-2 rounded-md bg-white px-4 text-sm font-medium text-slate-700 ring-1 ring-slate-200 hover:bg-slate-50"
+          to={`/payments/new?studentId=${studentId}`}
+        >
+          <Plus size={17} />
+          Novo pagamento
+        </Link>
+      ) : null}
       <Link
         className="inline-flex h-10 items-center justify-center gap-2 rounded-md bg-emerald-700 px-4 text-sm font-medium text-white hover:bg-emerald-800"
         to={`/students/${studentId}/edit`}

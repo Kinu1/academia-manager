@@ -58,23 +58,25 @@ export function PaymentsTable({ payments, students, canManage, deletingId, onDel
               </td>
               <td className="px-4 py-3">
                 <div className="flex justify-end gap-2">
-                  <Link
-                    className="inline-flex h-9 w-9 items-center justify-center rounded-md text-slate-600 hover:bg-slate-100"
-                    to={`/payments/${payment.id}`}
-                    aria-label={`Editar pagamento de ${studentNames.get(payment.studentId) ?? 'aluno removido'}`}
-                  >
-                    <Edit size={17} />
-                  </Link>
                   {canManage ? (
-                    <button
-                      className="inline-flex h-9 w-9 items-center justify-center rounded-md text-red-600 hover:bg-slate-100 hover:text-red-600 focus-visible:text-red-600 disabled:opacity-50"
-                      onClick={() => onDelete(payment.id)}
-                      type="button"
-                      disabled={deletingId === payment.id}
-                      aria-label={`Excluir pagamento de ${studentNames.get(payment.studentId) ?? 'aluno removido'}`}
-                    >
-                      <Trash2 size={17} />
-                    </button>
+                    <>
+                      <Link
+                        className="inline-flex h-9 w-9 items-center justify-center rounded-md text-slate-600 hover:bg-slate-100"
+                        to={`/payments/${payment.id}`}
+                        aria-label={`Editar pagamento de ${studentNames.get(payment.studentId) ?? 'aluno removido'}`}
+                      >
+                        <Edit size={17} />
+                      </Link>
+                      <button
+                        className="inline-flex h-9 w-9 items-center justify-center rounded-md text-red-600 hover:bg-slate-100 hover:text-red-600 focus-visible:text-red-600 disabled:opacity-50"
+                        onClick={() => onDelete(payment.id)}
+                        type="button"
+                        disabled={deletingId === payment.id}
+                        aria-label={`Excluir pagamento de ${studentNames.get(payment.studentId) ?? 'aluno removido'}`}
+                      >
+                        <Trash2 size={17} />
+                      </button>
+                    </>
                   ) : null}
                 </div>
               </td>

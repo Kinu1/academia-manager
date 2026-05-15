@@ -1,6 +1,7 @@
 using AcademiaManager.Application.Common;
 using AcademiaManager.Application.Interfaces;
 using AcademiaManager.Domain.Entities;
+using AcademiaManager.Domain.Enums;
 using AutoMapper;
 
 namespace AcademiaManager.Application.Academia;
@@ -27,6 +28,9 @@ public sealed class AcademiaService : IAcademiaService
     public async Task<StudentResponse?> GetStudentAsync(Guid id, CancellationToken cancellationToken)
         => _mapper.Map<StudentResponse?>(await _repository.GetStudentAsync(id, cancellationToken));
 
+    public async Task<StudentResponse?> GetStudentByUserIdAsync(Guid userId, CancellationToken cancellationToken)
+        => _mapper.Map<StudentResponse?>(await _repository.GetStudentByUserIdAsync(userId, cancellationToken));
+
     public async Task<StudentResponse> CreateStudentAsync(CreateStudentRequest request, CancellationToken cancellationToken)
     {
         var student = Student.Create(request.Name, request.Email, request.Phone);
@@ -43,6 +47,51 @@ public sealed class AcademiaService : IAcademiaService
         student.Update(request.Name, request.Email, request.Phone, request.Status, request.PlanId);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
         return _mapper.Map<StudentResponse>(student);
+    }
+
+    public async Task<Result<StudentResponse>> ChooseCurrentStudentPlanAsync(Guid userId, ChooseStudentPlanRequest request, CancellationToken cancellationToken)
+    {
+        var student = await _repository.GetStudentByUserIdAsync(userId, cancellationToken);
+        if (student is null)
+        {
+            return Result<StudentResponse>.Failure("student_profile_not_found", "Student profile was not found for the current user.");
+        }
+
+        var plan = await _repository.GetPlanAsync(request.PlanId, cancellationToken);
+        if (plan is null)
+        {
+            return Result<StudentResponse>.Failure("plan_not_found", "Plan not found.");
+        }
+
+        if (!plan.IsActive)
+        {
+            return Result<StudentResponse>.Failure("plan_inactive", "Only active plans can be selected.");
+        }
+
+        if (student.PlanId == request.PlanId)
+        {
+            return Result<StudentResponse>.Failure("plan_already_selected", "This plan is already selected.");
+        }
+
+        student.ChoosePlan(request.PlanId);
+        var (payments, _) = await _repository.ListPaymentsByStudentIdAsync(student.Id, 1, 100, cancellationToken);
+        var hasUnpaidChargeForPlan = payments.Any(payment =>
+            payment.Status is PaymentStatus.Pending or PaymentStatus.Overdue
+            && payment.Amount == plan.PriceAmount
+            && payment.Currency == plan.PriceCurrency);
+        var hasPaidChargeForPlan = payments.Any(payment =>
+            payment.Status == PaymentStatus.Paid
+            && payment.Amount == plan.PriceAmount
+            && payment.Currency == plan.PriceCurrency);
+
+        if (!hasUnpaidChargeForPlan && !hasPaidChargeForPlan)
+        {
+            var payment = Payment.Create(student.Id, plan.PriceAmount, DateTime.UtcNow);
+            await _repository.AddPaymentAsync(payment, cancellationToken);
+        }
+
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
+        return Result<StudentResponse>.Success(_mapper.Map<StudentResponse>(student));
     }
 
     public async Task<bool> DeleteStudentAsync(Guid id, CancellationToken cancellationToken)
@@ -127,6 +176,14 @@ public sealed class AcademiaService : IAcademiaService
     public async Task<PagedResult<PaymentResponse>> ListPaymentsAsync(int page, int perPage, CancellationToken cancellationToken)
     {
         var (items, total) = await _repository.ListPaymentsAsync(NormalizePage(page), NormalizePerPage(perPage), cancellationToken);
+        return Page(items.Select(_mapper.Map<PaymentResponse>).ToList(), page, perPage, total);
+    }
+
+    public async Task<PagedResult<PaymentResponse>?> ListPaymentsByStudentUserIdAsync(Guid userId, int page, int perPage, CancellationToken cancellationToken)
+    {
+        var student = await _repository.GetStudentByUserIdAsync(userId, cancellationToken);
+        if (student is null) return null;
+        var (items, total) = await _repository.ListPaymentsByStudentIdAsync(student.Id, NormalizePage(page), NormalizePerPage(perPage), cancellationToken);
         return Page(items.Select(_mapper.Map<PaymentResponse>).ToList(), page, perPage, total);
     }
 

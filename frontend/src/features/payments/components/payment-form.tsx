@@ -1,8 +1,9 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useEffect } from 'react'
-import { useForm } from 'react-hook-form'
+import { Controller, useForm } from 'react-hook-form'
 
 import { Button } from '../../../shared/ui/button'
+import { DateTimeField } from '../../../shared/ui/date-time-field'
 import { Field } from '../../../shared/ui/field'
 import { SelectField } from '../../../shared/ui/select-field'
 import type { StudentResponse } from '../../students/types'
@@ -62,10 +63,20 @@ export function PaymentForm({
         error={form.formState.errors.amount?.message ?? fieldErrors?.amount}
         inputProps={{ type: 'number', min: 0, step: '0.01', ...form.register('amount') }}
       />
-      <Field
-        label="Vencimento"
-        error={form.formState.errors.dueDateUtc?.message ?? fieldErrors?.dueDateUtc}
-        inputProps={{ type: 'datetime-local', ...form.register('dueDateUtc') }}
+      <Controller
+        control={form.control}
+        name="dueDateUtc"
+        render={({ field }) => (
+          <DateTimeField
+            disabled={isSubmitting}
+            error={form.formState.errors.dueDateUtc?.message ?? fieldErrors?.dueDateUtc}
+            label="Vencimento"
+            name={field.name}
+            onBlur={field.onBlur}
+            onChange={field.onChange}
+            value={field.value}
+          />
+        )}
       />
       {isEditing ? (
         <SelectField

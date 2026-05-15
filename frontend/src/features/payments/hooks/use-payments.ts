@@ -4,6 +4,7 @@ import {
   createPayment,
   deletePayment,
   getPayment,
+  listCurrentStudentPayments,
   listPayments,
   updatePayment,
   type ListPaymentsParams,
@@ -14,21 +15,31 @@ export const paymentKeys = {
   all: ['payments'] as const,
   lists: () => [...paymentKeys.all, 'list'] as const,
   list: (params: ListPaymentsParams) => [...paymentKeys.lists(), params] as const,
+  mine: (params: ListPaymentsParams) => [...paymentKeys.all, 'mine', params] as const,
   detail: (id: string) => [...paymentKeys.all, 'detail', id] as const,
 }
 
-export function usePayments(params: ListPaymentsParams) {
+export function usePayments(params: ListPaymentsParams, options?: { enabled?: boolean }) {
   return useQuery({
     queryKey: paymentKeys.list(params),
     queryFn: () => listPayments(params),
+    enabled: options?.enabled ?? true,
   })
 }
 
-export function usePayment(id?: string) {
+export function useCurrentStudentPayments(params: ListPaymentsParams, options?: { enabled?: boolean }) {
+  return useQuery({
+    queryKey: paymentKeys.mine(params),
+    queryFn: () => listCurrentStudentPayments(params),
+    enabled: options?.enabled ?? true,
+  })
+}
+
+export function usePayment(id?: string, options?: { enabled?: boolean }) {
   return useQuery({
     queryKey: paymentKeys.detail(id ?? ''),
     queryFn: () => getPayment(id!),
-    enabled: Boolean(id),
+    enabled: Boolean(id) && (options?.enabled ?? true),
   })
 }
 

@@ -1,8 +1,8 @@
 # Academia Manager
 
-Aplicacao organizada como monorepo com frontend e backend separados na mesma pasta.
+Aplicação organizada como um monorepo, com frontend e backend separados na mesma raiz.
 
-O projeto implementa um dashboard web para operacoes de academia com autenticacao baseada em JWT, consumo de API REST e modulos de gestao para alunos, planos, treinos e pagamentos.
+O projeto implementa um dashboard web para operações de academia, com autenticação baseada em JWT, consumo de API REST e módulos de gestão de alunos, planos, treinos e pagamentos.
 
 ## Estrutura
 
@@ -14,62 +14,62 @@ AcademiaManager/
 
 ## Arquitetura
 
-O repositorio esta dividido em duas aplicacoes independentes:
+O repositório está dividido em duas aplicações independentes:
 
-- `frontend/`: SPA em React responsavel por autenticacao, navegacao, formularios, tabelas, filtros e consumo da API
-- `backend/`: API em ASP.NET Core com separacao em camadas para regras de negocio, persistencia, autenticacao e exposicao HTTP
+- `frontend/`: SPA em React responsável por autenticação, navegação, formulários, tabelas, filtros e consumo da API.
+- `backend/`: API em ASP.NET Core organizada em camadas para regras de negócio, persistência, autenticação e exposição HTTP.
 
 ### Frontend
 
 - Build tool: Vite
 - UI: React 19 + TypeScript
 - Roteamento: React Router
-- Estado assinado ao servidor: TanStack Query
-- Estado de sessao: Redux Toolkit
-- Formularios e validacao: React Hook Form + Zod
-- Estilizacao: Tailwind CSS
+- Estado sincronizado com o servidor: TanStack Query
+- Estado de sessão: Redux Toolkit
+- Formulários e validação: React Hook Form + Zod
+- Estilização: Tailwind CSS
 - Testes: Vitest + Testing Library
 
-Organizacao principal:
+Organização principal:
 
-- `frontend/src/app`: bootstrap da aplicacao, providers, layouts e roteamento
-- `frontend/src/features`: modulos por dominio como `auth`, `students`, `plans`, `trainings` e `payments`
-- `frontend/src/shared`: cliente HTTP, utilitarios, componentes reutilizaveis e configuracoes comuns
-- `frontend/docs`: documentacao de contrato, arquitetura e escopo funcional
+- `frontend/src/app`: bootstrap da aplicação, providers, layouts e roteamento
+- `frontend/src/features`: módulos por domínio, como `auth`, `students`, `plans`, `trainings` e `payments`
+- `frontend/src/shared`: cliente HTTP, utilitários, componentes reutilizáveis e configurações comuns
+- `frontend/docs`: documentação de contrato, arquitetura e escopo funcional
 
 ### Backend
 
 - Runtime: ASP.NET Core
-- Persistencia: Entity Framework Core
+- Persistência: Entity Framework Core
 - Banco: PostgreSQL
-- Autenticacao: JWT Bearer
+- Autenticação: JWT Bearer
 - Testes: xUnit
 
-Organizacao principal:
+Organização principal:
 
-- `backend/src/AcademiaManager.Api`: endpoints HTTP, middlewares e composicao da aplicacao
-- `backend/src/AcademiaManager.Application`: casos de uso, contratos e validacoes
+- `backend/src/AcademiaManager.Api`: endpoints HTTP, middlewares e composição da aplicação
+- `backend/src/AcademiaManager.Application`: casos de uso, contratos e validações
 - `backend/src/AcademiaManager.Domain`: entidades, enums e value objects
-- `backend/src/AcademiaManager.Infrastructure`: acesso a dados, autenticacao JWT, repositorios e migrations
-- `backend/tests`: testes unitarios e de integracao
+- `backend/src/AcademiaManager.Infrastructure`: acesso a dados, autenticação JWT, repositórios e migrations
+- `backend/tests`: testes unitários e de integração
 
 ## Stack
 
 - Frontend: React, TypeScript, Vite, React Router, TanStack Query, React Hook Form, Zod, Redux Toolkit, Tailwind CSS, Vitest
 - Backend: ASP.NET Core, Entity Framework Core, PostgreSQL, JWT, xUnit
 
-## Pre-requisitos
+## Pré-requisitos
 
 - Node.js 24+
 - .NET SDK 9
-- PostgreSQL acessivel para o backend
+- PostgreSQL acessível ao backend
 
-## Fluxo de integracao
+## Fluxo de integração
 
-- O frontend consome a API via `VITE_API_BASE_URL`
-- O backend expoe Swagger e contrato OpenAPI em ambiente local
-- O fluxo de autenticacao usa `accessToken` e `refreshToken`
-- O frontend aplica protecao de rotas e restricao por papel conforme as respostas da API
+- O frontend consome a API por meio de `VITE_API_BASE_URL`.
+- O backend expõe Swagger e contrato OpenAPI em ambiente local.
+- O fluxo de autenticação usa `accessToken` e `refreshToken`.
+- O frontend aplica proteção de rotas e restrição por papel com base nas respostas da API.
 
 ## Como rodar localmente
 
@@ -89,7 +89,7 @@ npm install
 npm run dev
 ```
 
-3. Acesse a aplicacao no navegador:
+3. Acesse a aplicação no navegador:
 
 ```txt
 http://localhost:5173
@@ -102,7 +102,18 @@ http://localhost:5173
 - Swagger: `http://localhost:5123/swagger`
 - OpenAPI JSON: `http://localhost:5123/swagger/v1/swagger.json`
 
-## Configuracao
+## Conta de teste
+
+Para testar o painel administrativo em ambiente local:
+
+```txt
+Nome: admin
+E-mail: admin@teste.com
+Senha: admin
+Perfil: Admin
+```
+
+## Configuração
 
 ### Frontend
 
@@ -114,7 +125,7 @@ VITE_API_BASE_URL=http://localhost:5123
 
 ### Backend
 
-O backend exige configuracao de conexao com banco e segredo JWT. Exemplo com `user-secrets`:
+O backend exige configuração de conexão com o banco e segredo JWT. Exemplo com `user-secrets`:
 
 ```powershell
 cd backend
@@ -122,7 +133,7 @@ dotnet user-secrets set "ConnectionStrings:DefaultConnection" "<connection-strin
 dotnet user-secrets set "Jwt:Secret" "<segredo-com-pelo-menos-32-caracteres>" --project src\AcademiaManager.Api
 ```
 
-## Validacao tecnica
+## Validação técnica
 
 Frontend:
 
@@ -143,19 +154,19 @@ dotnet test AcademiaManagerApi.sln
 
 ## Funcionalidades implementadas
 
-- Autenticacao com login, cadastro, refresh de token e protecao de rotas
-- Dashboard com metricas e componentes de resumo
+- Autenticação com login, cadastro, refresh de token e proteção de rotas
+- Dashboard com métricas e componentes de resumo
 - CRUD de planos
 - CRUD de alunos
 - CRUD de treinos
 - CRUD de pagamentos
-- Controle de permissao por papel
-- Filtros, ordenacao e sincronizacao parcial de estado com URL em modulos do frontend
-- Validacoes no frontend e no backend
+- Controle de permissão por papel
+- Filtros, ordenação e sincronização parcial do estado com a URL em módulos do frontend
+- Validações no frontend e no backend
 
-## Observacoes tecnicas
+## Observações técnicas
 
 - O frontend usa `VITE_API_BASE_URL=http://localhost:5123`.
 - O backend exige `Jwt:Secret` com pelo menos 32 caracteres.
-- Segredos e arquivos locais nao devem ser versionados.
-- O repositorio foi reorganizado como monorepo, mantendo frontend e backend sob a mesma raiz para facilitar desenvolvimento e publicacao.
+- Segredos e arquivos locais não devem ser versionados.
+- O repositório foi reorganizado como monorepo, mantendo frontend e backend sob a mesma raiz para facilitar o desenvolvimento e a publicação.

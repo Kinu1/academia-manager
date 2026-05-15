@@ -10,6 +10,7 @@ import { Button } from '../../../shared/ui/button'
 import { ConfirmDialog } from '../../../shared/ui/confirm-dialog'
 import { useToast } from '../../../shared/ui/toast-context'
 import { useAuth } from '../../auth/hooks/use-auth'
+import { useChooseCurrentStudentPlan, useCurrentStudent } from '../../students/hooks/use-students'
 import { useDeletePlan, usePlans } from '../hooks/use-plans'
 import { PlansTable } from '../components/plans-table'
 import { filterPlans, sortPlans, type PlanFilters, type PlanSortField, type PlanStatusFilter } from '../lib/plan-filters'
@@ -20,7 +21,10 @@ export function PlansPage() {
   const filters = getPlanFiltersFromSearchParams(searchParams)
   const { user } = useAuth()
   const canManage = canManagePlans(user?.role)
+  const isStudent = user?.role === 'Student'
   const plansQuery = usePlans({ page: filters.page, perPage: filters.perPage })
+  const currentStudentQuery = useCurrentStudent({ enabled: isStudent })
+  const choosePlan = useChooseCurrentStudentPlan()
   const deletePlan = useDeletePlan()
   const [deletingId, setDeletingId] = useState<string>()
   const [confirmDeleteId, setConfirmDeleteId] = useState<string>()
@@ -36,6 +40,15 @@ export function PlansPage() {
     } finally {
       setDeletingId(undefined)
       setConfirmDeleteId(undefined)
+    }
+  }
+
+  async function handleChoosePlan(id: string) {
+    try {
+      await choosePlan.mutateAsync(id)
+      showToast({ title: 'Plano selecionado.', tone: 'success' })
+    } catch (error) {
+      showToast({ title: 'NÃ£o foi possÃ­vel selecionar o plano.', description: toApiError(error).message, tone: 'danger' })
     }
   }
 
@@ -196,6 +209,9 @@ export function PlansPage() {
               <PlansTable
                 plans={filteredPlans}
                 canManage={canManage}
+                currentPlanId={currentStudentQuery.data?.planId}
+                choosingPlanId={choosePlan.isPending ? choosePlan.variables : undefined}
+                onChoose={isStudent ? handleChoosePlan : undefined}
                 deletingId={deletingId}
                 onDelete={setConfirmDeleteId}
               />

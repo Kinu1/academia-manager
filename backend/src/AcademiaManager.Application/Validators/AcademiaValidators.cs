@@ -24,6 +24,14 @@ public sealed class UpdateStudentRequestValidator : AbstractValidator<UpdateStud
     }
 }
 
+public sealed class ChooseStudentPlanRequestValidator : AbstractValidator<ChooseStudentPlanRequest>
+{
+    public ChooseStudentPlanRequestValidator()
+    {
+        RuleFor(x => x.PlanId).NotEmpty();
+    }
+}
+
 public sealed class CreatePlanRequestValidator : AbstractValidator<CreatePlanRequest>
 {
     public CreatePlanRequestValidator()

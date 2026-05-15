@@ -8,11 +8,13 @@ public sealed record StudentResponse(
     string Email,
     string? Phone,
     StudentStatus Status,
+    Guid? UserId,
     Guid? PlanId,
     DateTime CreatedAtUtc,
     DateTime? UpdatedAtUtc);
 public sealed record CreateStudentRequest(string Name, string Email, string? Phone, Guid? PlanId);
 public sealed record UpdateStudentRequest(string Name, string Email, string? Phone, StudentStatus Status, Guid? PlanId);
+public sealed record ChooseStudentPlanRequest(Guid PlanId);
 
 public sealed record PlanResponse(
     Guid Id,

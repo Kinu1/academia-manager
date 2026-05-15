@@ -18,13 +18,14 @@ export function PaymentFormPage() {
   const selectedStudentId = searchParams.get('studentId') ?? ''
   const navigate = useNavigate()
   const { user } = useAuth()
-  const studentsQuery = useStudents({ page: 1, perPage: 100 })
-  const paymentQuery = usePayment(id)
+  const canManage = canManagePayments(user?.role)
+  const studentsQuery = useStudents({ page: 1, perPage: 100 }, { enabled: canManage })
+  const paymentQuery = usePayment(id, { enabled: canManage })
   const createPayment = useCreatePayment()
   const updatePayment = useUpdatePayment(id ?? '')
   const { showToast } = useToast()
 
-  if (!canManagePayments(user?.role)) {
+  if (!canManage) {
     return <Navigate to="/payments" replace />
   }
 

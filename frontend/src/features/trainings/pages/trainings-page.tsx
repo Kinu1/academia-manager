@@ -1,6 +1,6 @@
 import { Download, Plus, RefreshCw } from 'lucide-react'
 import { useState } from 'react'
-import { Link, useSearchParams } from 'react-router-dom'
+import { Link, Navigate, useSearchParams } from 'react-router-dom'
 
 import { toApiError } from '../../../shared/api/api-error'
 import { downloadCsv, toCsv } from '../../../shared/lib/csv'
@@ -21,12 +21,16 @@ export function TrainingsPage() {
   const filters = getTrainingFiltersFromSearchParams(searchParams)
   const { user } = useAuth()
   const canManage = canManageTrainings(user?.role)
-  const trainingsQuery = useTrainings({ page: filters.page, perPage: filters.perPage })
-  const studentsQuery = useStudents({ page: 1, perPage: 100 })
+  const trainingsQuery = useTrainings({ page: filters.page, perPage: filters.perPage }, { enabled: canManage })
+  const studentsQuery = useStudents({ page: 1, perPage: 100 }, { enabled: canManage })
   const deleteTraining = useDeleteTraining()
   const [deletingId, setDeletingId] = useState<string>()
   const [confirmDeleteId, setConfirmDeleteId] = useState<string>()
   const { showToast } = useToast()
+
+  if (!canManage) {
+    return <Navigate to="/plans" replace />
+  }
 
   async function handleDelete(id: string) {
     setDeletingId(id)

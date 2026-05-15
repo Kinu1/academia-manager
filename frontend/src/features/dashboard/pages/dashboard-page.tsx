@@ -1,9 +1,9 @@
 import { AlertTriangle, CalendarClock, Dumbbell, Plus, Receipt, Route, ShieldAlert, Users } from 'lucide-react'
-import { Link } from 'react-router-dom'
+import { Link, Navigate } from 'react-router-dom'
 
 import type { UserRole } from '../../../shared/api/types'
 import { formatCurrency, formatDateTime } from '../../../shared/lib/formatters'
-import { canManagePayments, canManageStudents, canManageTrainings } from '../../../shared/lib/permissions'
+import { canManagePayments, canManageStudents, canManageTrainings, canViewPayments } from '../../../shared/lib/permissions'
 import { Button } from '../../../shared/ui/button'
 import { EmptyState } from '../../../shared/ui/empty-state'
 import { PageHeader } from '../../../shared/ui/page-header'
@@ -18,17 +18,23 @@ import { getDashboardInsights, type EnrichedPayment, type EnrichedTraining } fro
 
 export function DashboardPage() {
   const { user } = useAuth()
-  const studentsQuery = useStudents({ page: 1, perPage: 100 })
-  const plansQuery = usePlans({ page: 1, perPage: 100 })
-  const trainingsQuery = useTrainings({ page: 1, perPage: 100 })
-  const paymentsQuery = usePayments({ page: 1, perPage: 100 })
+  const canViewFinancial = canViewPayments(user?.role)
+  const isOperationalRole = user?.role === 'Admin' || user?.role === 'Trainer'
+  const studentsQuery = useStudents({ page: 1, perPage: 100 }, { enabled: isOperationalRole })
+  const plansQuery = usePlans({ page: 1, perPage: 100 }, { enabled: isOperationalRole })
+  const trainingsQuery = useTrainings({ page: 1, perPage: 100 }, { enabled: isOperationalRole })
+  const paymentsQuery = usePayments({ page: 1, perPage: 100 }, { enabled: canViewFinancial })
 
-  const isLoading = studentsQuery.isLoading || plansQuery.isLoading || trainingsQuery.isLoading || paymentsQuery.isLoading
-  const isError = studentsQuery.isError || plansQuery.isError || trainingsQuery.isError || paymentsQuery.isError
+  if (user?.role === 'Student') {
+    return <Navigate to="/plans" replace />
+  }
+
+  const isLoading = studentsQuery.isLoading || plansQuery.isLoading || trainingsQuery.isLoading || (canViewFinancial && paymentsQuery.isLoading)
+  const isError = studentsQuery.isError || plansQuery.isError || trainingsQuery.isError || (canViewFinancial && paymentsQuery.isError)
   const students = studentsQuery.data?.data ?? []
   const plans = plansQuery.data?.data ?? []
   const trainings = trainingsQuery.data?.data ?? []
-  const payments = paymentsQuery.data?.data ?? []
+  const payments = canViewFinancial ? paymentsQuery.data?.data ?? [] : []
   const insights = getDashboardInsights({ students, plans, trainings, payments })
 
   return (
@@ -41,7 +47,9 @@ export function DashboardPage() {
           <>
             <span>{studentsQuery.data?.total ?? 0} alunos no sistema</span>
             <span>{trainingsQuery.data?.total ?? 0} treinos cadastrados</span>
+            {canViewFinancial ? (
             <span>{paymentsQuery.data?.total ?? 0} cobranças registradas</span>
+            ) : null}
           </>
         }
         actions={<QuickActions role={user?.role} />}
@@ -63,7 +71,7 @@ export function DashboardPage() {
               studentsQuery.refetch()
               plansQuery.refetch()
               trainingsQuery.refetch()
-              paymentsQuery.refetch()
+              if (canViewFinancial) paymentsQuery.refetch()
             }}
           >
             Tentar novamente
@@ -89,7 +97,9 @@ export function DashboardPage() {
               tone="blue"
               to="/trainings"
             />
-            <StatCard
+            {canViewFinancial ? (
+              <>
+                <StatCard
               icon={Receipt}
               label="Receita do mês"
               value={formatCurrency(insights.monthlyRevenue, 'BRL')}
@@ -97,19 +107,21 @@ export function DashboardPage() {
               tone="emerald"
               to="/payments?status=Paid"
             />
-            <StatCard
+                <StatCard
               icon={ShieldAlert}
               label="Risco financeiro"
               value={insights.financialRiskCount}
               description="Cobranças pendentes ou vencidas"
               tone={insights.financialRiskCount > 0 ? 'red' : 'neutral'}
               to="/payments"
-            />
+                />
+              </>
+            ) : null}
           </section>
 
-          <section className="grid gap-4 xl:grid-cols-[1.15fr_0.85fr]">
+          <section className={canViewFinancial ? 'grid gap-4 xl:grid-cols-[1.15fr_0.85fr]' : 'grid gap-4'}>
             <TrainingBoard trainings={insights.upcomingTrainings} todaysCount={insights.todaysTrainings.length} />
-            <FinancialBoard payments={insights.overduePayments} />
+            {canViewFinancial ? <FinancialBoard payments={insights.overduePayments} /> : null}
           </section>
 
           <section className="grid gap-4 lg:grid-cols-3">

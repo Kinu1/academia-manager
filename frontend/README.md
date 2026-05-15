@@ -2,16 +2,16 @@
 
 Dashboard em React para a `AcademiaManager.Api`.
 
-O frontend implementa a camada de apresentacao da aplicacao, com autenticacao, protecao de rotas, formularios tipados, consultas HTTP e modulos de CRUD integrados ao backend.
+O frontend implementa a camada de apresentação da aplicação, com autenticação, proteção de rotas, formulários tipados, consultas HTTP e módulos de CRUD integrados ao backend.
 
 ## Responsabilidades
 
-- autenticacao e persistencia de sessao no cliente
-- consumo da API REST via cliente HTTP centralizado
-- validacao de formularios antes do envio
-- protecao de telas por autenticacao e papel
-- exibicao de estados de loading, erro, vazio e sucesso
-- navegacao e composicao de telas por feature
+- autenticação e persistência de sessão no cliente
+- consumo da API REST por meio de um cliente HTTP centralizado
+- validação de formulários antes do envio
+- proteção de telas por autenticação e papel
+- exibição de estados de loading, erro, vazio e sucesso
+- navegação e composição de telas por feature
 
 ## Stack
 
@@ -24,38 +24,38 @@ O frontend implementa a camada de apresentacao da aplicacao, com autenticacao, p
 - React Hook Form + Zod
 - Tailwind CSS
 - Vitest + Testing Library
-- MSW e Playwright instalados para as proximas fases de testes
+- MSW e Playwright instalados para as próximas fases de testes
 
 ## Arquitetura
 
-O frontend esta organizado por dominio funcional.
+O frontend está organizado por domínio funcional.
 
-- `src/app`: inicializacao da aplicacao, providers globais, layouts e roteamento
-- `src/features`: modulos como `auth`, `students`, `plans`, `trainings` e `payments`
-- `src/shared`: componentes reutilizaveis, cliente HTTP, hooks, helpers e configuracoes comuns
-- `docs`: contrato da API, arquitetura, escopo e decisoes de implementacao
+- `src/app`: inicialização da aplicação, providers globais, layouts e roteamento
+- `src/features`: módulos como `auth`, `students`, `plans`, `trainings` e `payments`
+- `src/shared`: componentes reutilizáveis, cliente HTTP, hooks, helpers e configurações compartilhadas
+- `docs`: contrato da API, arquitetura, escopo e decisões de implementação
 
-Padroes principais:
+Padrões principais:
 
-- feature-first organization
+- organização orientada a features
 - cliente HTTP centralizado
 - estado remoto com TanStack Query
-- estado de autenticacao com Redux Toolkit
-- formularios com React Hook Form + Zod
-- componentes reutilizaveis em `shared/ui`
+- estado de autenticação com Redux Toolkit
+- formulários com React Hook Form + Zod
+- componentes reutilizáveis em `shared/ui`
 
 ## Requisitos
 
 - Node.js 24+
 - `AcademiaManager.Api` rodando em `http://localhost:5123`
 
-Diretorio esperado do backend neste workspace:
+Diretório esperado do backend neste workspace:
 
 ```txt
 ..\backend
 ```
 
-## Instalacao
+## Instalação
 
 ```powershell
 Copy-Item .env.example .env
@@ -63,21 +63,21 @@ npm install
 npm run dev
 ```
 
-Conteudo esperado do `.env`:
+Conteúdo esperado do `.env`:
 
 ```text
 VITE_API_BASE_URL=http://localhost:5123
 ```
 
-## Integracao com o backend
+## Integração com o backend
 
-- a base URL da API e controlada por `VITE_API_BASE_URL`
+- a base URL da API é controlada por `VITE_API_BASE_URL`
 - o frontend consome endpoints REST expostos pela `AcademiaManager.Api`
-- autenticacao usa `accessToken` e `refreshToken`
-- rotas protegidas dependem do estado autenticado e do papel retornado pela API
-- erros de API sao normalizados antes de chegar nas telas
+- a autenticação usa `accessToken` e `refreshToken`
+- as rotas protegidas dependem do estado autenticado e do papel retornado pela API
+- os erros de API são normalizados antes de chegar às telas
 
-URL padrao do frontend:
+URL padrão do frontend:
 
 ```txt
 http://localhost:5173
@@ -90,7 +90,7 @@ http://localhost:5173
 3. Acesse `http://localhost:5173`.
 4. Use o Swagger do backend para validar contratos e payloads.
 
-## Execucao local
+## Execução local
 
 ```powershell
 Copy-Item .env.example .env
@@ -111,8 +111,8 @@ npm run format
 ## Scripts principais
 
 - `npm run dev`: inicia o servidor Vite
-- `npm run build`: gera build de producao
-- `npm run lint`: valida o codigo com ESLint
+- `npm run build`: gera a build de produção
+- `npm run lint`: valida o código com ESLint
 - `npm run test`: executa os testes com Vitest
 - `npm run format`: formata os arquivos com Prettier
 
@@ -127,24 +127,24 @@ docs/
 ```
 
 - `src/app`: providers, layout e roteamento
-- `src/features`: modulos de dominio como auth, students, plans, trainings e payments
-- `src/shared`: cliente HTTP, utilitarios e componentes reutilizaveis
+- `src/features`: módulos de domínio como auth, students, plans, trainings e payments
+- `src/shared`: cliente HTTP, utilitários e componentes reutilizáveis
 
 ## Funcionalidades implementadas
 
 - Estrutura inicial com Vite, React e TypeScript
-- Configuracao do Tailwind CSS
-- Cliente de API com header JWT e nova tentativa apos refresh
-- Estado de sessao de autenticacao com Redux
-- Paginas de login e cadastro
+- Configuração do Tailwind CSS
+- Cliente de API com header JWT e nova tentativa após refresh
+- Estado de sessão de autenticação com Redux
+- Páginas de login e cadastro
 - Layout protegido do dashboard
-- Chamadas para metricas do dashboard
+- Chamadas para métricas do dashboard
 - CRUD de planos, alunos, treinos e pagamentos
-- Controle de permissoes por papel
-- Filtros e ordenacao por URL em partes da aplicacao
-- Testes unitarios e de comportamento para fluxos principais
+- Controle de permissões por papel
+- Filtros e ordenação por URL em partes da aplicação
+- Testes unitários e de comportamento para fluxos principais
 
-## Validacao tecnica
+## Validação técnica
 
 ```powershell
 npm run lint
@@ -152,8 +152,8 @@ npm run build
 npm run test
 ```
 
-## Observacoes tecnicas
+## Observações técnicas
 
 - o frontend depende da disponibilidade do backend em `http://localhost:5123`
-- o contrato principal de referencia esta em `docs/api-contract.md`
-- o fluxo de autenticacao e um dos pontos centrais da aplicacao e deve permanecer isolado em modulos compartilhados
+- o contrato principal de referência está em `docs/api-contract.md`
+- o fluxo de autenticação é um dos pontos centrais da aplicação e deve permanecer isolado em módulos compartilhados

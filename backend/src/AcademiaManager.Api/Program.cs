@@ -3,8 +3,11 @@ using System.Text.Json.Serialization;
 using AcademiaManager.Api.Middlewares;
 using AcademiaManager.Application;
 using AcademiaManager.Application.Common;
+using AcademiaManager.Application.Interfaces;
 using AcademiaManager.Application.Mappings;
 using AcademiaManager.Application.Validators;
+using AcademiaManager.Domain.Entities;
+using AcademiaManager.Domain.Enums;
 using AcademiaManager.Infrastructure;
 using AcademiaManager.Infrastructure.Data;
 using AutoMapper;
@@ -134,6 +137,15 @@ using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     await db.Database.MigrateAsync();
+
+    const string adminEmail = "admin@teste.com";
+    if (!await db.Users.AnyAsync(user => user.Email == adminEmail))
+    {
+        var passwordHasher = scope.ServiceProvider.GetRequiredService<IPasswordHasher>();
+        var admin = User.Create("admin", adminEmail, passwordHasher.Hash("admin"), UserRole.Admin);
+        await db.Users.AddAsync(admin);
+        await db.SaveChangesAsync();
+    }
 }
 
 await app.RunAsync();

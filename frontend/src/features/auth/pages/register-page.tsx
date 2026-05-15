@@ -5,7 +5,6 @@ import { Link, useNavigate } from 'react-router-dom'
 
 import { Button } from '../../../shared/ui/button'
 import { Field } from '../../../shared/ui/field'
-import { SelectField } from '../../../shared/ui/select-field'
 import { toApiError } from '../../../shared/api/api-error'
 import { useAppDispatch } from '../../../shared/hooks/redux'
 import { register } from '../api/auth-api'
@@ -37,7 +36,6 @@ export function RegisterPage() {
   const nameField = form.register('name')
   const emailField = form.register('email')
   const passwordField = form.register('password')
-  const roleField = form.register('role')
 
   return (
     <main className="flex min-h-screen items-center justify-center bg-slate-100 px-4">
@@ -51,7 +49,7 @@ export function RegisterPage() {
           className="space-y-4"
           onSubmit={form.handleSubmit((values) => {
             mutation.reset()
-            mutation.mutate(values)
+            mutation.mutate({ ...values, role: 'Student' })
           })}
         >
           <Field
@@ -91,21 +89,6 @@ export function RegisterPage() {
               },
             }}
           />
-          <SelectField
-            label="Perfil"
-            error={form.formState.errors.role?.message}
-            selectProps={{
-              ...roleField,
-              onChange: (event) => {
-                mutation.reset()
-                roleField.onChange(event)
-              },
-            }}
-          >
-            <option value="Trainer">Trainer</option>
-            <option value="Student">Student</option>
-          </SelectField>
-
           {error ? <p className="text-sm text-red-600">{error}</p> : null}
 
           <Button className="w-full" disabled={mutation.isPending}>

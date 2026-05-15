@@ -1,6 +1,7 @@
 using AcademiaManager.Application.Common;
 using AcademiaManager.Application.Interfaces;
 using AcademiaManager.Domain.Entities;
+using AcademiaManager.Domain.Enums;
 using AcademiaManager.Domain.ValueObjects;
 using AutoMapper;
 
@@ -10,6 +11,7 @@ public sealed class AuthService : IAuthService
 {
     private static readonly TimeSpan RefreshTokenLifetime = TimeSpan.FromDays(14);
     private readonly IUserRepository _users;
+    private readonly IAcademiaRepository _academia;
     private readonly IPasswordHasher _passwordHasher;
     private readonly ITokenService _tokenService;
     private readonly IUnitOfWork _unitOfWork;
@@ -17,12 +19,14 @@ public sealed class AuthService : IAuthService
 
     public AuthService(
         IUserRepository users,
+        IAcademiaRepository academia,
         IPasswordHasher passwordHasher,
         ITokenService tokenService,
         IUnitOfWork unitOfWork,
         IMapper mapper)
     {
         _users = users;
+        _academia = academia;
         _passwordHasher = passwordHasher;
         _tokenService = tokenService;
         _unitOfWork = unitOfWork;
@@ -31,16 +35,37 @@ public sealed class AuthService : IAuthService
 
     public async Task<Result<AuthResponse>> RegisterAsync(RegisterRequest request, CancellationToken cancellationToken)
     {
+        if (request.Role != UserRole.Student)
+        {
+            return Result<AuthResponse>.Failure("role_not_allowed", "Public registration is available only for students.");
+        }
+
         var email = Email.Create(request.Email).Value;
         if (await _users.EmailExistsAsync(email, cancellationToken))
         {
             return Result<AuthResponse>.Failure("email_conflict", "Email already registered.");
         }
 
-        var user = User.Create(request.Name, email, _passwordHasher.Hash(request.Password), request.Role);
+        var student = await _academia.GetStudentByEmailAsync(email, cancellationToken);
+        if (student?.UserId is not null)
+        {
+            return Result<AuthResponse>.Failure("student_user_conflict", "This student profile is already linked to a user.");
+        }
+
+        var user = User.Create(request.Name, email, _passwordHasher.Hash(request.Password), UserRole.Student);
         var refreshToken = CreateRefreshToken(user);
 
         await _users.AddAsync(user, cancellationToken);
+        if (student is null)
+        {
+            student = Student.Create(request.Name, email, null, user.Id);
+            await _academia.AddStudentAsync(student, cancellationToken);
+        }
+        else
+        {
+            student.LinkUser(user.Id);
+        }
+
         await _users.AddRefreshTokenAsync(refreshToken.Entity, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 

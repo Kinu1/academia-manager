@@ -16,11 +16,13 @@ public sealed class AcademiaMappingProfileTests
     [Fact]
     public void StudentResponse_IncludesEntityTimestamps()
     {
-        var student = Student.Create("Joao Silva", "joao@example.com", "11999999999");
+        var userId = Guid.NewGuid();
+        var student = Student.Create("Joao Silva", "joao@example.com", "11999999999", userId);
         student.Update("Joao Silva", "joao@example.com", "11999999999", StudentStatus.Active, Guid.NewGuid());
 
         var response = _mapper.Map<StudentResponse>(student);
 
+        Assert.Equal(userId, response.UserId);
         Assert.Equal(student.CreatedAtUtc, response.CreatedAtUtc);
         Assert.Equal(student.UpdatedAtUtc, response.UpdatedAtUtc);
     }

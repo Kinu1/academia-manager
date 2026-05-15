@@ -1,8 +1,9 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useEffect } from 'react'
-import { useForm } from 'react-hook-form'
+import { Controller, useForm } from 'react-hook-form'
 
 import { Button } from '../../../shared/ui/button'
+import { DateTimeField } from '../../../shared/ui/date-time-field'
 import { Field } from '../../../shared/ui/field'
 import { SelectField } from '../../../shared/ui/select-field'
 import type { StudentResponse } from '../../students/types'
@@ -58,19 +59,29 @@ export function TrainingForm({
         ))}
       </SelectField>
       <Field
-        label="Título"
+        label="TÃ­tulo"
         error={form.formState.errors.title?.message ?? fieldErrors?.title}
         inputProps={form.register('title')}
       />
       <Field
-        label="Descrição"
+        label="DescriÃ§Ã£o"
         error={form.formState.errors.description?.message ?? fieldErrors?.description}
         inputProps={form.register('description')}
       />
-      <Field
-        label="Data e horário"
-        error={form.formState.errors.scheduledForUtc?.message ?? fieldErrors?.scheduledForUtc}
-        inputProps={{ type: 'datetime-local', ...form.register('scheduledForUtc') }}
+      <Controller
+        control={form.control}
+        name="scheduledForUtc"
+        render={({ field }) => (
+          <DateTimeField
+            disabled={isSubmitting}
+            error={form.formState.errors.scheduledForUtc?.message ?? fieldErrors?.scheduledForUtc}
+            label="Data e horÃ¡rio"
+            name={field.name}
+            onBlur={field.onBlur}
+            onChange={field.onChange}
+            value={field.value}
+          />
+        )}
       />
 
       {error ? <p className="text-sm text-red-600">{error}</p> : null}

@@ -6,6 +6,7 @@ export type StudentResponse = {
   email: string
   phone?: string | null
   status: StudentStatus
+  userId?: string | null
   planId?: string | null
   createdAtUtc?: string
   updatedAtUtc?: string | null

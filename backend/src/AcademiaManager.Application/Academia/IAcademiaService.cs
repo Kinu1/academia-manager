@@ -6,8 +6,10 @@ public interface IAcademiaService
 {
     Task<PagedResult<StudentResponse>> ListStudentsAsync(int page, int perPage, CancellationToken cancellationToken);
     Task<StudentResponse?> GetStudentAsync(Guid id, CancellationToken cancellationToken);
+    Task<StudentResponse?> GetStudentByUserIdAsync(Guid userId, CancellationToken cancellationToken);
     Task<StudentResponse> CreateStudentAsync(CreateStudentRequest request, CancellationToken cancellationToken);
     Task<StudentResponse?> UpdateStudentAsync(Guid id, UpdateStudentRequest request, CancellationToken cancellationToken);
+    Task<Result<StudentResponse>> ChooseCurrentStudentPlanAsync(Guid userId, ChooseStudentPlanRequest request, CancellationToken cancellationToken);
     Task<bool> DeleteStudentAsync(Guid id, CancellationToken cancellationToken);
 
     Task<PagedResult<PlanResponse>> ListPlansAsync(int page, int perPage, CancellationToken cancellationToken);
@@ -23,6 +25,7 @@ public interface IAcademiaService
     Task<bool> DeleteTrainingAsync(Guid id, CancellationToken cancellationToken);
 
     Task<PagedResult<PaymentResponse>> ListPaymentsAsync(int page, int perPage, CancellationToken cancellationToken);
+    Task<PagedResult<PaymentResponse>?> ListPaymentsByStudentUserIdAsync(Guid userId, int page, int perPage, CancellationToken cancellationToken);
     Task<PaymentResponse?> GetPaymentAsync(Guid id, CancellationToken cancellationToken);
     Task<PaymentResponse> CreatePaymentAsync(CreatePaymentRequest request, CancellationToken cancellationToken);
     Task<PaymentResponse?> UpdatePaymentAsync(Guid id, UpdatePaymentRequest request, CancellationToken cancellationToken);
