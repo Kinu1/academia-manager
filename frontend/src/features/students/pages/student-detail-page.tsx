@@ -1,10 +1,14 @@
-import { ArrowLeft, Edit, Mail, Phone, Plus, Receipt, Route, WalletCards } from 'lucide-react'
+import { ArrowLeft, CalendarClock, Edit, History, Mail, Phone, Plus, Receipt, Route, WalletCards } from 'lucide-react'
 import { Link, useParams } from 'react-router-dom'
 
 import { formatCurrency, formatDateTime } from '../../../shared/lib/formatters'
 import { canManageStudents } from '../../../shared/lib/permissions'
 import { Badge } from '../../../shared/ui/badge'
 import { Button } from '../../../shared/ui/button'
+import { PageHeader } from '../../../shared/ui/page-header'
+import { StatCard } from '../../../shared/ui/stat-card'
+import { SurfaceCard } from '../../../shared/ui/surface-card'
+import { Timeline } from '../../../shared/ui/timeline'
 import { useAuth } from '../../auth/hooks/use-auth'
 import { usePayments } from '../../payments/hooks/use-payments'
 import type { PaymentResponse, PaymentStatus } from '../../payments/types'
@@ -36,6 +40,8 @@ const paymentStatusTones: Record<PaymentStatus, 'neutral' | 'success' | 'warning
   Canceled: 'neutral',
 }
 
+type StudentDetail = ReturnType<typeof getStudentDetailData>
+
 export function StudentDetailPage() {
   const { id } = useParams()
   const { user } = useAuth()
@@ -54,23 +60,20 @@ export function StudentDetailPage() {
 
   return (
     <div className="space-y-6">
-      <Link
-        className="inline-flex items-center gap-2 text-sm font-medium text-slate-600 hover:text-slate-950"
-        to="/students"
-      >
+      <Link className="inline-flex items-center gap-2 text-sm font-medium text-slate-400 hover:text-slate-50" to="/students">
         <ArrowLeft size={16} />
         Voltar
       </Link>
 
       {isLoading ? (
-        <div className="rounded-lg border border-slate-200 bg-white p-6 text-sm text-slate-600 shadow-sm">
-          Carregando aluno...
-        </div>
+        <SurfaceCard className="p-6">
+          <p className="text-sm text-slate-400">Carregando aluno...</p>
+        </SurfaceCard>
       ) : null}
 
       {isError ? (
-        <div className="rounded-lg border border-red-200 bg-white p-6 shadow-sm">
-          <p className="text-sm font-medium text-red-700">Não foi possível carregar os dados do aluno.</p>
+        <SurfaceCard className="border-red-300/30 p-6">
+          <p className="text-sm font-medium text-red-200">Não foi possível carregar os dados do aluno.</p>
           <Button
             className="mt-4"
             onClick={() => {
@@ -83,159 +86,161 @@ export function StudentDetailPage() {
           >
             Tentar novamente
           </Button>
-        </div>
+        </SurfaceCard>
       ) : null}
 
-      {studentQuery.data && detail ? (
-        <>
-          <section className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
-            <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
-              <div>
-                <div className="flex flex-wrap items-center gap-3">
-                  <h1 className="text-2xl font-semibold text-slate-950">{studentQuery.data.name}</h1>
-                  <Badge tone={statusTone[studentQuery.data.status]}>{studentQuery.data.status}</Badge>
-                </div>
-                <dl className="mt-4 grid gap-3 text-sm text-slate-600 sm:grid-cols-2">
-                  <div className="flex items-center gap-2">
-                    <Mail size={16} aria-hidden="true" />
-                    <dt className="sr-only">E-mail</dt>
-                    <dd>{studentQuery.data.email}</dd>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Phone size={16} aria-hidden="true" />
-                    <dt className="sr-only">Telefone</dt>
-                    <dd>{studentQuery.data.phone || 'Sem telefone'}</dd>
-                  </div>
-                </dl>
-              </div>
-
-              {canEdit ? (
-                <div className="flex flex-wrap gap-2">
-                  <Link
-                    className="inline-flex h-10 items-center justify-center gap-2 rounded-md bg-white px-4 text-sm font-medium text-slate-700 ring-1 ring-slate-200 hover:bg-slate-50"
-                    to={`/trainings/new?studentId=${studentQuery.data.id}`}
-                  >
-                    <Plus size={17} />
-                    Novo treino
-                  </Link>
-                  <Link
-                    className="inline-flex h-10 items-center justify-center gap-2 rounded-md bg-white px-4 text-sm font-medium text-slate-700 ring-1 ring-slate-200 hover:bg-slate-50"
-                    to={`/payments/new?studentId=${studentQuery.data.id}`}
-                  >
-                    <Plus size={17} />
-                    Novo pagamento
-                  </Link>
-                  <Link
-                    className="inline-flex h-10 items-center justify-center gap-2 rounded-md bg-emerald-700 px-4 text-sm font-medium text-white hover:bg-emerald-800"
-                    to={`/students/${studentQuery.data.id}/edit`}
-                  >
-                    <Edit size={17} />
-                    Editar aluno
-                  </Link>
-                </div>
-              ) : null}
-            </div>
-          </section>
-
-          <section className="grid gap-4 lg:grid-cols-3">
-            <PlanSummary plan={detail.plan} />
-            <CountSummary icon={Route} label="Treinos" description="Total vinculado" value={detail.trainings.length} />
-            <CountSummary
-              icon={Receipt}
-              label="Pagamentos"
-              description="Total vinculado"
-              value={detail.payments.length}
-              tone="warning"
-            />
-          </section>
-
-          <section className="grid gap-4 xl:grid-cols-2">
-            <StudentTrainings trainings={detail.trainings} />
-            <StudentPayments payments={detail.payments} />
-          </section>
-        </>
-      ) : null}
+      {studentQuery.data && detail ? <StudentProfile student={studentQuery.data} detail={detail} canEdit={canEdit} /> : null}
     </div>
+  )
+}
+
+function StudentProfile({ student, detail, canEdit }: { student: StudentResponse; detail: StudentDetail; canEdit: boolean }) {
+  return (
+    <>
+      <PageHeader
+        eyebrow="Perfil 360"
+        title={student.name}
+        description="Visão unificada do vínculo comercial, treinos, cobranças e histórico operacional do aluno."
+        meta={
+          <>
+            <Badge tone={statusTone[student.status]}>{student.status}</Badge>
+            <span className="inline-flex items-center gap-2">
+              <Mail size={15} aria-hidden="true" />
+              {student.email}
+            </span>
+            <span className="inline-flex items-center gap-2">
+              <Phone size={15} aria-hidden="true" />
+              {student.phone || 'Sem telefone'}
+            </span>
+          </>
+        }
+        actions={canEdit ? <StudentActions studentId={student.id} /> : null}
+      />
+
+      <section className="grid gap-4 lg:grid-cols-4">
+        <PlanSummary plan={detail.plan} />
+        <StatCard
+          icon={Route}
+          label="Treinos"
+          value={detail.trainings.length}
+          description={detail.nextTraining ? `Próximo: ${formatDateTime(detail.nextTraining.scheduledForUtc)}` : 'Nenhum treino futuro'}
+          tone="blue"
+        />
+        <StatCard
+          icon={Receipt}
+          label="Pendências"
+          value={detail.pendingPayments.length + detail.overduePayments.length}
+          description={`${detail.overduePayments.length} atrasado(s)`}
+          tone={detail.overduePayments.length > 0 ? 'red' : 'amber'}
+        />
+        <StatCard
+          icon={WalletCards}
+          label="Total pago"
+          value={formatCurrency(detail.totalPaid)}
+          description="Histórico financeiro recebido"
+        />
+      </section>
+
+      <section className="grid gap-4 xl:grid-cols-3">
+        <StudentTimeline items={detail.timeline} />
+        <StudentTrainings trainings={detail.trainings} />
+        <StudentPayments payments={detail.payments} />
+      </section>
+    </>
+  )
+}
+
+function StudentActions({ studentId }: { studentId: string }) {
+  return (
+    <>
+      <Link
+        className="inline-flex h-10 items-center justify-center gap-2 rounded-md bg-white px-4 text-sm font-medium text-slate-700 ring-1 ring-slate-200 hover:bg-slate-50"
+        to={`/trainings/new?studentId=${studentId}`}
+      >
+        <Plus size={17} />
+        Novo treino
+      </Link>
+      <Link
+        className="inline-flex h-10 items-center justify-center gap-2 rounded-md bg-white px-4 text-sm font-medium text-slate-700 ring-1 ring-slate-200 hover:bg-slate-50"
+        to={`/payments/new?studentId=${studentId}`}
+      >
+        <Plus size={17} />
+        Novo pagamento
+      </Link>
+      <Link
+        className="inline-flex h-10 items-center justify-center gap-2 rounded-md bg-emerald-700 px-4 text-sm font-medium text-white hover:bg-emerald-800"
+        to={`/students/${studentId}/edit`}
+      >
+        <Edit size={17} />
+        Editar aluno
+      </Link>
+    </>
   )
 }
 
 function PlanSummary({ plan }: { plan?: PlanResponse }) {
   return (
-    <article className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
+    <SurfaceCard as="article" className="p-5">
       <div className="flex items-center gap-3">
-        <span className="flex h-9 w-9 items-center justify-center rounded-md bg-emerald-50 text-emerald-700">
-          <WalletCards size={18} />
+        <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-emerald-400/12 text-emerald-200 ring-1 ring-emerald-300/20">
+          <WalletCards size={18} aria-hidden="true" />
         </span>
         <div>
-          <h2 className="text-sm font-semibold text-slate-950">Plano atual</h2>
-          <p className="text-xs text-slate-500">Vínculo comercial.</p>
+          <h2 className="text-sm font-semibold text-slate-50">Plano atual</h2>
+          <p className="text-xs text-slate-400">Vínculo comercial.</p>
         </div>
       </div>
       {plan ? (
-        <div className="mt-4 space-y-1 text-sm text-slate-700">
-          <p className="font-medium text-slate-950">{plan.name}</p>
+        <div className="mt-4 space-y-1 text-sm text-slate-300">
+          <p className="font-medium text-slate-50">{plan.name}</p>
           <p>{formatCurrency(plan.priceAmount, plan.priceCurrency)}</p>
           <p>{plan.durationInDays} dias</p>
         </div>
       ) : (
-        <p className="mt-4 text-sm text-slate-600">Aluno sem plano vinculado.</p>
+        <p className="mt-4 text-sm text-slate-400">Aluno sem plano vinculado.</p>
       )}
-    </article>
+    </SurfaceCard>
   )
 }
 
-function CountSummary({
-  icon: Icon,
-  label,
-  description,
-  value,
-  tone = 'success',
-}: {
-  icon: typeof Route
-  label: string
-  description: string
-  value: number
-  tone?: 'success' | 'warning'
-}) {
-  const toneClass = tone === 'warning' ? 'bg-amber-50 text-amber-700' : 'bg-emerald-50 text-emerald-700'
-
+function StudentTimeline({ items }: { items: StudentDetail['timeline'] }) {
   return (
-    <article className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
-      <div className="flex items-center gap-3">
-        <span className={`flex h-9 w-9 items-center justify-center rounded-md ${toneClass}`}>
-          <Icon size={18} />
+    <SurfaceCard as="article" className="p-5">
+      <header className="mb-5 flex items-center gap-3">
+        <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-slate-400/12 text-slate-200 ring-1 ring-slate-300/20">
+          <History size={18} aria-hidden="true" />
         </span>
         <div>
-          <h2 className="text-sm font-semibold text-slate-950">{label}</h2>
-          <p className="text-xs text-slate-500">{description}</p>
+          <h2 className="text-sm font-semibold text-slate-50">Linha do tempo</h2>
+          <p className="text-xs text-slate-400">Eventos operacionais do aluno.</p>
         </div>
-      </div>
-      <p className="mt-4 text-3xl font-semibold text-slate-950">{value}</p>
-    </article>
+      </header>
+      <Timeline items={items} />
+    </SurfaceCard>
   )
 }
 
 function StudentTrainings({ trainings }: { trainings: TrainingResponse[] }) {
   return (
-    <article className="rounded-lg border border-slate-200 bg-white shadow-sm">
-      <header className="border-b border-slate-100 px-5 py-4">
-        <h2 className="text-sm font-semibold text-slate-950">Treinos do aluno</h2>
+    <SurfaceCard as="article">
+      <header className="flex items-center gap-3 border-b border-white/10 px-5 py-4">
+        <span className="flex h-9 w-9 items-center justify-center rounded-2xl bg-sky-400/12 text-sky-200 ring-1 ring-sky-300/20">
+          <CalendarClock size={17} aria-hidden="true" />
+        </span>
+        <h2 className="text-sm font-semibold text-slate-50">Treinos do aluno</h2>
       </header>
       {trainings.length === 0 ? (
-        <p className="px-5 py-6 text-sm text-slate-600">Nenhum treino vinculado.</p>
+        <p className="px-5 py-6 text-sm text-slate-400">Nenhum treino vinculado.</p>
       ) : (
-        <ul className="divide-y divide-slate-100">
+        <ul className="divide-y divide-white/10">
           {trainings.map((training) => (
             <li key={training.id} className="px-5 py-4">
               <div className="flex items-start justify-between gap-4">
                 <div>
-                  <p className="text-sm font-medium text-slate-950">{training.title}</p>
-                  <p className="mt-1 text-xs text-slate-500">{training.description}</p>
+                  <p className="text-sm font-medium text-slate-50">{training.title}</p>
+                  <p className="mt-1 text-xs text-slate-400">{training.description}</p>
                 </div>
-                <time
-                  className="shrink-0 text-right text-xs font-medium text-slate-600"
-                  dateTime={training.scheduledForUtc}
-                >
+                <time className="shrink-0 text-right text-xs font-medium text-slate-300" dateTime={training.scheduledForUtc}>
                   {formatDateTime(training.scheduledForUtc)}
                 </time>
               </div>
@@ -243,28 +248,29 @@ function StudentTrainings({ trainings }: { trainings: TrainingResponse[] }) {
           ))}
         </ul>
       )}
-    </article>
+    </SurfaceCard>
   )
 }
 
 function StudentPayments({ payments }: { payments: PaymentResponse[] }) {
   return (
-    <article className="rounded-lg border border-slate-200 bg-white shadow-sm">
-      <header className="border-b border-slate-100 px-5 py-4">
-        <h2 className="text-sm font-semibold text-slate-950">Pagamentos do aluno</h2>
+    <SurfaceCard as="article">
+      <header className="flex items-center gap-3 border-b border-white/10 px-5 py-4">
+        <span className="flex h-9 w-9 items-center justify-center rounded-2xl bg-amber-400/12 text-amber-200 ring-1 ring-amber-300/20">
+          <Receipt size={17} aria-hidden="true" />
+        </span>
+        <h2 className="text-sm font-semibold text-slate-50">Pagamentos do aluno</h2>
       </header>
       {payments.length === 0 ? (
-        <p className="px-5 py-6 text-sm text-slate-600">Nenhum pagamento vinculado.</p>
+        <p className="px-5 py-6 text-sm text-slate-400">Nenhum pagamento vinculado.</p>
       ) : (
-        <ul className="divide-y divide-slate-100">
+        <ul className="divide-y divide-white/10">
           {payments.map((payment) => (
             <li key={payment.id} className="px-5 py-4">
               <div className="flex items-start justify-between gap-4">
                 <div>
-                  <p className="text-sm font-medium text-slate-950">
-                    {formatCurrency(payment.amount, payment.currency)}
-                  </p>
-                  <p className="mt-1 text-xs text-slate-500">Vence em {formatDateTime(payment.dueDateUtc)}</p>
+                  <p className="text-sm font-medium text-slate-50">{formatCurrency(payment.amount, payment.currency)}</p>
+                  <p className="mt-1 text-xs text-slate-400">Vence em {formatDateTime(payment.dueDateUtc)}</p>
                 </div>
                 <Badge tone={paymentStatusTones[payment.status]}>{paymentStatusLabels[payment.status]}</Badge>
               </div>
@@ -272,6 +278,6 @@ function StudentPayments({ payments }: { payments: PaymentResponse[] }) {
           ))}
         </ul>
       )}
-    </article>
+    </SurfaceCard>
   )
 }
