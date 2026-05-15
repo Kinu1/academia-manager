@@ -59,12 +59,12 @@ export function TrainingForm({
         ))}
       </SelectField>
       <Field
-        label="TÃ­tulo"
+        label="Título"
         error={form.formState.errors.title?.message ?? fieldErrors?.title}
         inputProps={form.register('title')}
       />
       <Field
-        label="DescriÃ§Ã£o"
+        label="Descrição"
         error={form.formState.errors.description?.message ?? fieldErrors?.description}
         inputProps={form.register('description')}
       />
@@ -75,7 +75,7 @@ export function TrainingForm({
           <DateTimeField
             disabled={isSubmitting}
             error={form.formState.errors.scheduledForUtc?.message ?? fieldErrors?.scheduledForUtc}
-            label="Data e horÃ¡rio"
+            label="Data e horário"
             name={field.name}
             onBlur={field.onBlur}
             onChange={field.onChange}

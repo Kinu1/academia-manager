@@ -65,14 +65,14 @@ export function StudentDetailPage() {
 
   return (
     <div className="space-y-6">
-      <Link className="inline-flex items-center gap-2 text-sm font-medium text-slate-400 hover:text-slate-50" to="/students">
+      <Link className="inline-flex items-center gap-2 text-sm font-medium text-slate-600 hover:text-slate-950" to="/students">
         <ArrowLeft size={16} />
         Voltar
       </Link>
 
       {isLoading ? (
         <SurfaceCard className="p-6">
-          <p className="text-sm text-slate-400">Carregando aluno...</p>
+          <p className="text-sm text-slate-600">Carregando aluno...</p>
         </SurfaceCard>
       ) : null}
 
@@ -205,22 +205,22 @@ function PlanSummary({ plan }: { plan?: PlanResponse }) {
   return (
     <SurfaceCard as="article" className="p-5">
       <div className="flex items-center gap-3">
-        <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-emerald-400/12 text-emerald-200 ring-1 ring-emerald-300/20">
+        <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-red-50 text-red-600 ring-1 ring-red-200">
           <WalletCards size={18} aria-hidden="true" />
         </span>
         <div>
-          <h2 className="text-sm font-semibold text-slate-50">Plano atual</h2>
-          <p className="text-xs text-slate-400">Vínculo comercial.</p>
+          <h2 className="text-sm font-semibold text-slate-950">Plano atual</h2>
+          <p className="text-xs text-slate-600">Vínculo comercial.</p>
         </div>
       </div>
       {plan ? (
-        <div className="mt-4 space-y-1 text-sm text-slate-300">
-          <p className="font-medium text-slate-50">{plan.name}</p>
+        <div className="mt-4 space-y-1 text-sm text-slate-600">
+          <p className="font-medium text-slate-950">{plan.name}</p>
           <p>{formatCurrency(plan.priceAmount, plan.priceCurrency)}</p>
           <p>{plan.durationInDays} dias</p>
         </div>
       ) : (
-        <p className="mt-4 text-sm text-slate-400">Aluno sem plano vinculado.</p>
+        <p className="mt-4 text-sm text-slate-600">Aluno sem plano vinculado.</p>
       )}
     </SurfaceCard>
   )
@@ -230,12 +230,12 @@ function StudentTimeline({ items }: { items: StudentDetail['timeline'] }) {
   return (
     <SurfaceCard as="article" className="p-5">
       <header className="mb-5 flex items-center gap-3">
-        <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-slate-400/12 text-slate-200 ring-1 ring-slate-300/20">
+        <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-100 text-slate-700 ring-1 ring-slate-200">
           <History size={18} aria-hidden="true" />
         </span>
         <div>
-          <h2 className="text-sm font-semibold text-slate-50">Linha do tempo</h2>
-          <p className="text-xs text-slate-400">Eventos operacionais do aluno.</p>
+          <h2 className="text-sm font-semibold text-slate-950">Linha do tempo</h2>
+          <p className="text-xs text-slate-600">Eventos operacionais do aluno.</p>
         </div>
       </header>
       <Timeline items={items} />
@@ -246,24 +246,24 @@ function StudentTimeline({ items }: { items: StudentDetail['timeline'] }) {
 function StudentTrainings({ trainings }: { trainings: TrainingResponse[] }) {
   return (
     <SurfaceCard as="article">
-      <header className="flex items-center gap-3 border-b border-white/10 px-5 py-4">
-        <span className="flex h-9 w-9 items-center justify-center rounded-2xl bg-sky-400/12 text-sky-200 ring-1 ring-sky-300/20">
+      <header className="flex items-center gap-3 border-b border-slate-100 px-5 py-4">
+        <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-slate-100 text-slate-700 ring-1 ring-slate-200">
           <CalendarClock size={17} aria-hidden="true" />
         </span>
-        <h2 className="text-sm font-semibold text-slate-50">Treinos do aluno</h2>
+        <h2 className="text-sm font-semibold text-slate-950">Treinos do aluno</h2>
       </header>
       {trainings.length === 0 ? (
-        <p className="px-5 py-6 text-sm text-slate-400">Nenhum treino vinculado.</p>
+        <p className="px-5 py-6 text-sm text-slate-600">Nenhum treino vinculado.</p>
       ) : (
-        <ul className="divide-y divide-white/10">
+        <ul className="divide-y divide-slate-100">
           {trainings.map((training) => (
             <li key={training.id} className="px-5 py-4">
               <div className="flex items-start justify-between gap-4">
                 <div>
-                  <p className="text-sm font-medium text-slate-50">{training.title}</p>
-                  <p className="mt-1 text-xs text-slate-400">{training.description}</p>
+                  <p className="text-sm font-medium text-slate-950">{training.title}</p>
+                  <p className="mt-1 text-xs text-slate-600">{training.description}</p>
                 </div>
-                <time className="shrink-0 text-right text-xs font-medium text-slate-300" dateTime={training.scheduledForUtc}>
+                <time className="shrink-0 text-right text-xs font-medium text-slate-600" dateTime={training.scheduledForUtc}>
                   {formatDateTime(training.scheduledForUtc)}
                 </time>
               </div>
@@ -278,22 +278,22 @@ function StudentTrainings({ trainings }: { trainings: TrainingResponse[] }) {
 function StudentPayments({ payments }: { payments: PaymentResponse[] }) {
   return (
     <SurfaceCard as="article">
-      <header className="flex items-center gap-3 border-b border-white/10 px-5 py-4">
-        <span className="flex h-9 w-9 items-center justify-center rounded-2xl bg-amber-400/12 text-amber-200 ring-1 ring-amber-300/20">
+      <header className="flex items-center gap-3 border-b border-slate-100 px-5 py-4">
+        <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-amber-50 text-amber-700 ring-1 ring-amber-200">
           <Receipt size={17} aria-hidden="true" />
         </span>
-        <h2 className="text-sm font-semibold text-slate-50">Pagamentos do aluno</h2>
+        <h2 className="text-sm font-semibold text-slate-950">Pagamentos do aluno</h2>
       </header>
       {payments.length === 0 ? (
-        <p className="px-5 py-6 text-sm text-slate-400">Nenhum pagamento vinculado.</p>
+        <p className="px-5 py-6 text-sm text-slate-600">Nenhum pagamento vinculado.</p>
       ) : (
-        <ul className="divide-y divide-white/10">
+        <ul className="divide-y divide-slate-100">
           {payments.map((payment) => (
             <li key={payment.id} className="px-5 py-4">
               <div className="flex items-start justify-between gap-4">
                 <div>
-                  <p className="text-sm font-medium text-slate-50">{formatCurrency(payment.amount, payment.currency)}</p>
-                  <p className="mt-1 text-xs text-slate-400">Vence em {formatDateTime(payment.dueDateUtc)}</p>
+                  <p className="text-sm font-medium text-slate-950">{formatCurrency(payment.amount, payment.currency)}</p>
+                  <p className="mt-1 text-xs text-slate-600">Vence em {formatDateTime(payment.dueDateUtc)}</p>
                 </div>
                 <Badge tone={paymentStatusTones[payment.status]}>{paymentStatusLabels[payment.status]}</Badge>
               </div>

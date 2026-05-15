@@ -18,15 +18,15 @@ type TimelineProps = {
 }
 
 const toneClasses = {
-  emerald: 'bg-emerald-400/14 text-emerald-200 ring-emerald-300/20',
-  amber: 'bg-amber-400/14 text-amber-200 ring-amber-300/20',
-  red: 'bg-red-400/14 text-red-200 ring-red-300/20',
-  neutral: 'bg-slate-400/14 text-slate-200 ring-slate-300/20',
+  emerald: 'bg-green-50 text-green-700 ring-green-200',
+  amber: 'bg-amber-50 text-amber-700 ring-amber-200',
+  red: 'bg-red-50 text-red-700 ring-red-200',
+  neutral: 'bg-slate-100 text-slate-700 ring-slate-200',
 }
 
 export function Timeline({ items, emptyMessage = 'Nenhum evento registrado.' }: TimelineProps) {
   if (items.length === 0) {
-    return <p className="px-5 py-6 text-sm text-slate-400">{emptyMessage}</p>
+    return <p className="px-5 py-6 text-sm text-slate-600">{emptyMessage}</p>
   }
 
   return (
@@ -47,12 +47,12 @@ export function Timeline({ items, emptyMessage = 'Nenhum evento registrado.' }: 
             </span>
             <div>
               <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
-                <p className="text-sm font-semibold text-slate-50">{item.title}</p>
+                <p className="text-sm font-semibold text-slate-950">{item.title}</p>
                 <time className="text-xs text-slate-500" dateTime={item.timestamp}>
                   {formatDateTime(item.timestamp)}
                 </time>
               </div>
-              {item.description ? <p className="mt-1 text-sm leading-6 text-slate-400">{item.description}</p> : null}
+              {item.description ? <p className="mt-1 text-sm leading-6 text-slate-600">{item.description}</p> : null}
             </div>
           </li>
         )

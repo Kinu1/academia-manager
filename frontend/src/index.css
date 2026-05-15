@@ -1,18 +1,21 @@
 @import 'tailwindcss';
 
 :root {
-  --am-bg: #050914;
-  --am-surface: rgba(15, 23, 42, 0.86);
-  --am-surface-strong: rgba(2, 6, 23, 0.92);
-  --am-border: rgba(148, 163, 184, 0.22);
-  --am-border-strong: rgba(226, 232, 240, 0.16);
-  --am-text: #e5edf7;
-  --am-muted: #9aa9bd;
-  --am-accent: #2dd4bf;
-  --am-accent-strong: #14b8a6;
-  --am-warning: #f59e0b;
+  --am-bg: #f8fafc;
+  --am-bg-muted: #f1f5f9;
+  --am-surface: #ffffff;
+  --am-surface-strong: #111827;
+  --am-border: #e2e8f0;
+  --am-border-strong: #cbd5e1;
+  --am-text: #111827;
+  --am-muted: #64748b;
+  --am-primary: #dc2626;
+  --am-primary-hover: #b91c1c;
+  --am-primary-soft: #fee2e2;
+  --am-accent: #f59e0b;
+  --am-success: #16a34a;
   --am-danger: #ef4444;
-  color: #e5edf7;
+  color: var(--am-text);
   background: var(--am-bg);
   font-family:
     "Aptos Display", "Segoe UI Variable", Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
@@ -23,6 +26,10 @@ body {
   min-width: 320px;
   min-height: 100vh;
   margin: 0;
+  background:
+    linear-gradient(180deg, rgba(248, 250, 252, 0.96), rgba(241, 245, 249, 0.98)),
+    radial-gradient(circle at 90% 0%, rgba(220, 38, 38, 0.08), transparent 28rem);
+  color: var(--am-text);
 }
 
 button,
@@ -36,167 +43,73 @@ textarea {
   box-sizing: border-box;
 }
 
-body {
-  background:
-    radial-gradient(circle at 12% -8%, rgba(45, 212, 191, 0.18), transparent 28rem),
-    radial-gradient(circle at 88% 8%, rgba(56, 189, 248, 0.09), transparent 24rem),
-    linear-gradient(135deg, var(--am-bg) 0%, #0b1220 46%, #111827 100%);
-  color: var(--am-text);
-}
-
 ::selection {
-  background: rgba(20, 184, 166, 0.35);
-  color: #f8fafc;
-}
-
-.bg-slate-100 {
-  background-color: #070b12 !important;
-}
-
-.bg-white {
-  background-color: rgba(15, 23, 42, 0.94) !important;
-}
-
-.bg-slate-50 {
-  background-color: rgba(30, 41, 59, 0.72) !important;
-}
-
-.bg-emerald-50 {
-  background-color: rgba(16, 185, 129, 0.14) !important;
-}
-
-.bg-emerald-700 {
-  background-color: #10b981 !important;
-}
-
-.hover\:bg-emerald-800:hover {
-  background-color: #059669 !important;
-}
-
-.hover\:bg-slate-100:hover,
-.hover\:bg-slate-50:hover {
-  background-color: rgba(51, 65, 85, 0.72) !important;
-}
-
-.bg-amber-50 {
-  background-color: rgba(245, 158, 11, 0.16) !important;
-}
-
-.bg-red-50 {
-  background-color: rgba(239, 68, 68, 0.14) !important;
-}
-
-.bg-slate-100.text-slate-700,
-.bg-emerald-100,
-.bg-amber-100,
-.bg-red-100 {
-  border: 1px solid rgba(148, 163, 184, 0.18);
-}
-
-.bg-emerald-100 {
-  background-color: rgba(16, 185, 129, 0.16) !important;
-}
-
-.bg-amber-100 {
-  background-color: rgba(245, 158, 11, 0.18) !important;
-}
-
-.bg-red-100 {
-  background-color: rgba(248, 113, 113, 0.16) !important;
-}
-
-.text-white {
-  color: #052e2b !important;
-}
-
-.text-slate-950,
-.text-slate-900,
-.text-slate-800 {
-  color: #f8fafc !important;
-}
-
-.text-slate-700,
-.text-slate-600,
-.text-slate-500 {
-  color: #b7c4d6 !important;
-}
-
-.text-emerald-700,
-.text-emerald-800 {
-  color: #5eead4 !important;
-}
-
-.text-amber-700,
-.text-amber-800 {
-  color: #fbbf24 !important;
-}
-
-.text-red-600,
-.text-red-700,
-.text-red-800 {
-  color: #fca5a5 !important;
-}
-
-.border-slate-200,
-.border-slate-300,
-.border-slate-100 {
-  border-color: rgba(148, 163, 184, 0.22) !important;
-}
-
-.border-red-200 {
-  border-color: rgba(248, 113, 113, 0.42) !important;
-}
-
-.divide-slate-100 > :not([hidden]) ~ :not([hidden]) {
-  border-color: rgba(148, 163, 184, 0.16) !important;
-}
-
-.ring-slate-200 {
-  --tw-ring-color: rgba(148, 163, 184, 0.32) !important;
-}
-
-.focus\:border-emerald-600:focus {
-  border-color: #2dd4bf !important;
-}
-
-.focus\:ring-emerald-100:focus,
-.focus\:ring-emerald-200:focus {
-  --tw-ring-color: rgba(45, 212, 191, 0.32) !important;
-}
-
-.shadow-sm {
-  box-shadow:
-    0 18px 50px rgba(0, 0, 0, 0.28),
-    inset 0 1px 0 rgba(255, 255, 255, 0.03) !important;
-}
-
-.shadow-lg {
-  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.42) !important;
+  background: rgba(220, 38, 38, 0.18);
+  color: #111827;
 }
 
 input,
 select,
 textarea {
-  color: #f8fafc;
-  background-color: rgba(2, 6, 23, 0.62) !important;
-  caret-color: #5eead4;
+  caret-color: var(--am-primary);
 }
 
 input::placeholder,
 textarea::placeholder {
-  color: #64748b;
+  color: #94a3b8;
+}
+
+.bg-emerald-700 {
+  background-color: var(--am-primary) !important;
+}
+
+.bg-emerald-600 {
+  background-color: var(--am-primary) !important;
+}
+
+.hover\:bg-emerald-800:hover {
+  background-color: var(--am-primary-hover) !important;
+}
+
+.hover\:bg-emerald-600:hover {
+  background-color: var(--am-primary) !important;
+}
+
+.bg-emerald-50 {
+  background-color: var(--am-primary-soft) !important;
+}
+
+.hover\:bg-emerald-50:hover {
+  background-color: var(--am-primary-soft) !important;
+}
+
+.text-emerald-700,
+.text-emerald-800 {
+  color: var(--am-primary) !important;
+}
+
+.hover\:text-emerald-800:hover {
+  color: var(--am-primary-hover) !important;
+}
+
+.focus\:border-emerald-600:focus {
+  border-color: var(--am-primary) !important;
+}
+
+.focus\:ring-emerald-100:focus,
+.focus\:ring-emerald-200:focus,
+.focus\:ring-emerald-300:focus,
+.focus\:ring-emerald-500:focus {
+  --tw-ring-color: rgba(220, 38, 38, 0.24) !important;
+}
+
+.hover\:border-emerald-200:hover {
+  border-color: rgba(220, 38, 38, 0.42) !important;
 }
 
 button.bg-emerald-700,
 a.bg-emerald-700 {
-  color: #052e2b !important;
   box-shadow:
-    0 14px 34px rgba(16, 185, 129, 0.28),
-    inset 0 1px 0 rgba(255, 255, 255, 0.24);
-}
-
-section.bg-white,
-article.bg-white,
-div.bg-white {
-  backdrop-filter: blur(14px);
+    0 12px 28px rgba(220, 38, 38, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
 }

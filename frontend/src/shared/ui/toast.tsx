@@ -6,8 +6,8 @@ import { ToastContext } from './toast-context'
 import { toastReducer, type ToastInput, type ToastTone } from './toast-state'
 
 const toneClasses: Record<ToastTone, string> = {
-  success: 'border-emerald-200 bg-emerald-50 text-slate-100',
-  danger: 'border-red-200 bg-red-50 text-slate-100',
+  success: 'border-green-200 bg-green-50 text-green-950',
+  danger: 'border-red-200 bg-red-50 text-red-950',
   info: 'border-slate-200 bg-white text-slate-950',
 }
 
@@ -59,7 +59,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
                   {toast.description ? <p className="mt-1 text-sm opacity-80">{toast.description}</p> : null}
                 </div>
                 <button
-                  className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-md hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-emerald-200"
+                  className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-md hover:bg-black/5 focus:outline-none focus:ring-2 focus:ring-red-200"
                   onClick={() => dismissToast(toast.id)}
                   type="button"
                   aria-label="Fechar aviso"

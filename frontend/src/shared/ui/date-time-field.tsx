@@ -198,24 +198,6 @@ export function DateTimeField({
                   </div>
                 </div>
 
-                <button
-                  className="w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-100"
-                  onClick={() => {
-                    const now = new Date()
-                    const nextDateValue = formatPtBrDate(now)
-                    const nextHours = String(now.getHours()).padStart(2, '0')
-                    const nextMinutes = String(now.getMinutes()).padStart(2, '0')
-
-                    setViewDate(now)
-                    setDateValue(nextDateValue)
-                    setHourValue(nextHours)
-                    setMinuteValue(nextMinutes)
-                    syncValue(nextDateValue, nextHours, nextMinutes)
-                  }}
-                  type="button"
-                >
-                  Agora
-                </button>
               </div>
             </div>
           </div>

@@ -57,13 +57,13 @@ export function DashboardPage() {
 
       {isLoading ? (
         <SurfaceCard className="p-6">
-          <p className="text-sm text-slate-400">Carregando operação da academia...</p>
+          <p className="text-sm text-slate-600">Carregando operação da academia...</p>
         </SurfaceCard>
       ) : null}
 
       {isError ? (
         <SurfaceCard className="border-red-300/30 p-6">
-          <p className="text-sm font-medium text-red-200">Não foi possível carregar o dashboard operacional.</p>
+          <p className="text-sm font-medium text-red-700">Não foi possível carregar o dashboard operacional.</p>
           <Button
             className="mt-4"
             type="button"
@@ -181,15 +181,15 @@ function QuickActions({ role }: { role?: UserRole }) {
 function TrainingBoard({ trainings, todaysCount }: { trainings: EnrichedTraining[]; todaysCount: number }) {
   return (
     <SurfaceCard aria-labelledby="training-board-title">
-      <div className="flex flex-col gap-3 border-b border-white/10 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex flex-col gap-3 border-b border-slate-100 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.24em] text-emerald-200">Agenda</p>
-          <h2 id="training-board-title" className="mt-1 text-lg font-semibold text-slate-50">
+          <p className="text-xs font-semibold uppercase tracking-[0.24em] text-red-600">Agenda</p>
+          <h2 id="training-board-title" className="mt-1 text-lg font-semibold text-slate-950">
             Próximos treinos
           </h2>
-          <p className="mt-1 text-sm text-slate-400">{todaysCount} treino(s) marcados para hoje.</p>
+          <p className="mt-1 text-sm text-slate-600">{todaysCount} treino(s) marcados para hoje.</p>
         </div>
-        <Link className="text-sm font-medium text-emerald-200 hover:text-emerald-100" to="/trainings">
+        <Link className="text-sm font-medium text-red-600 hover:text-red-700" to="/trainings">
           Ver agenda
         </Link>
       </div>
@@ -208,17 +208,17 @@ function TrainingBoard({ trainings, todaysCount }: { trainings: EnrichedTraining
           />
         </div>
       ) : (
-        <ul className="divide-y divide-white/10">
+        <ul className="divide-y divide-slate-100">
           {trainings.map((training) => (
             <li key={training.id}>
-              <Link className="block px-5 py-4 transition hover:bg-white/5 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-emerald-300" to={`/trainings/${training.id}`}>
+              <Link className="block px-5 py-4 transition hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-red-200" to={`/trainings/${training.id}`}>
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                   <div>
-                    <p className="text-sm font-semibold text-slate-50">{training.title}</p>
-                    <p className="mt-1 text-sm text-slate-400">{training.studentName}</p>
+                    <p className="text-sm font-semibold text-slate-950">{training.title}</p>
+                    <p className="mt-1 text-sm text-slate-600">{training.studentName}</p>
                     <p className="mt-1 text-xs text-slate-500">{training.description}</p>
                   </div>
-                  <time className="text-sm font-medium text-slate-300" dateTime={training.scheduledForUtc}>
+                  <time className="text-sm font-medium text-slate-600" dateTime={training.scheduledForUtc}>
                     {formatDateTime(training.scheduledForUtc)}
                   </time>
                 </div>
@@ -234,12 +234,12 @@ function TrainingBoard({ trainings, todaysCount }: { trainings: EnrichedTraining
 function FinancialBoard({ payments }: { payments: EnrichedPayment[] }) {
   return (
     <SurfaceCard aria-labelledby="financial-board-title">
-      <div className="border-b border-white/10 px-5 py-4">
-        <p className="text-xs font-semibold uppercase tracking-[0.24em] text-amber-200">Financeiro</p>
-        <h2 id="financial-board-title" className="mt-1 text-lg font-semibold text-slate-50">
+      <div className="border-b border-slate-100 px-5 py-4">
+        <p className="text-xs font-semibold uppercase tracking-[0.24em] text-amber-600">Financeiro</p>
+        <h2 id="financial-board-title" className="mt-1 text-lg font-semibold text-slate-950">
           Cobranças críticas
         </h2>
-        <p className="mt-1 text-sm text-slate-400">Pagamentos vencidos ou pendentes com data passada.</p>
+        <p className="mt-1 text-sm text-slate-600">Pagamentos vencidos ou pendentes com data passada.</p>
       </div>
 
       {payments.length === 0 ? (
@@ -256,16 +256,16 @@ function FinancialBoard({ payments }: { payments: EnrichedPayment[] }) {
           />
         </div>
       ) : (
-        <ul className="divide-y divide-white/10">
+        <ul className="divide-y divide-slate-100">
           {payments.slice(0, 5).map((payment) => (
             <li key={payment.id}>
-              <Link className="block px-5 py-4 transition hover:bg-white/5 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-emerald-300" to={`/payments/${payment.id}`}>
+              <Link className="block px-5 py-4 transition hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-red-200" to={`/payments/${payment.id}`}>
                 <div className="flex items-start justify-between gap-4">
                   <div>
-                    <p className="text-sm font-semibold text-slate-50">{payment.studentName}</p>
-                    <p className="mt-1 text-sm text-slate-400">{formatCurrency(payment.amount, payment.currency)}</p>
+                    <p className="text-sm font-semibold text-slate-950">{payment.studentName}</p>
+                    <p className="mt-1 text-sm text-slate-600">{formatCurrency(payment.amount, payment.currency)}</p>
                   </div>
-                  <time className="text-right text-xs font-medium text-red-200" dateTime={payment.dueDateUtc}>
+                  <time className="text-right text-xs font-medium text-red-700" dateTime={payment.dueDateUtc}>
                     Venceu {formatDateTime(payment.dueDateUtc)}
                   </time>
                 </div>
@@ -292,14 +292,14 @@ function OperationalCard({
   to: string
 }) {
   return (
-    <Link to={to} className="block focus:outline-none focus:ring-2 focus:ring-emerald-300 focus:ring-offset-2 focus:ring-offset-slate-950">
-      <SurfaceCard as="article" className="h-full p-5 transition hover:-translate-y-0.5 hover:border-white/20">
-        <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-emerald-400/12 text-emerald-200 ring-1 ring-emerald-300/20">
+    <Link to={to} className="block focus:outline-none focus:ring-2 focus:ring-red-200 focus:ring-offset-2">
+      <SurfaceCard as="article" className="h-full p-5 transition hover:-translate-y-0.5 hover:border-red-200">
+        <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-red-50 text-red-600 ring-1 ring-red-200">
           <Icon size={18} aria-hidden="true" />
         </span>
-        <p className="mt-4 text-sm font-medium text-slate-400">{title}</p>
-        <p className="mt-2 text-2xl font-semibold text-slate-50">{value}</p>
-        <p className="mt-2 text-sm leading-6 text-slate-400">{description}</p>
+        <p className="mt-4 text-sm font-medium text-slate-600">{title}</p>
+        <p className="mt-2 text-2xl font-semibold text-slate-950">{value}</p>
+        <p className="mt-2 text-sm leading-6 text-slate-600">{description}</p>
       </SurfaceCard>
     </Link>
   )

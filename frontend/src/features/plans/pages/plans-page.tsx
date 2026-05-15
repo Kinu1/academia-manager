@@ -48,7 +48,7 @@ export function PlansPage() {
       await choosePlan.mutateAsync(id)
       showToast({ title: 'Plano selecionado.', tone: 'success' })
     } catch (error) {
-      showToast({ title: 'NÃ£o foi possÃ­vel selecionar o plano.', description: toApiError(error).message, tone: 'danger' })
+      showToast({ title: 'Não foi possível selecionar o plano.', description: toApiError(error).message, tone: 'danger' })
     }
   }
 

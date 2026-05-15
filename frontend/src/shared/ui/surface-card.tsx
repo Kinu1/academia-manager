@@ -11,7 +11,7 @@ export function SurfaceCard({ as: Component = 'section', className, children, ..
   return (
     <Component
       className={cn(
-        'rounded-2xl border border-white/10 bg-slate-950/58 shadow-[0_20px_70px_rgba(0,0,0,0.26)] backdrop-blur-xl',
+        'rounded-xl border border-slate-200 bg-white shadow-sm',
         className,
       )}
       {...props}

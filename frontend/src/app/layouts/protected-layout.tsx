@@ -52,14 +52,14 @@ export function ProtectedLayout() {
 
   return (
     <div className="min-h-screen bg-slate-100">
-      <aside className="fixed inset-y-0 left-0 hidden w-64 border-r border-slate-200 bg-white px-4 py-5 lg:block">
-        <div className="flex items-center gap-2 text-slate-950">
-          <span className="flex h-9 w-9 items-center justify-center rounded-md bg-emerald-700 text-white">
+      <aside className="fixed inset-y-0 left-0 hidden w-64 border-r border-slate-800 bg-slate-950 px-4 py-5 lg:block">
+        <div className="flex items-center gap-2 text-white">
+          <span className="flex h-9 w-9 items-center justify-center rounded-md bg-red-600 text-white">
             <Dumbbell size={19} />
           </span>
           <div>
             <p className="text-sm font-semibold">Academia Manager</p>
-            <p className="text-xs text-slate-500">Painel operacional</p>
+            <p className="text-xs text-slate-400">Painel operacional</p>
           </div>
         </div>
 
@@ -71,7 +71,7 @@ export function ProtectedLayout() {
               end={item.to === '/'}
               className={({ isActive }) =>
                 `flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium ${
-                  isActive ? 'bg-emerald-50 text-emerald-800' : 'text-slate-600 hover:bg-slate-100'
+                  isActive ? 'bg-red-600 text-white' : 'text-slate-300 hover:bg-slate-800 hover:text-white'
                 }`
               }
             >
@@ -91,7 +91,7 @@ export function ProtectedLayout() {
           <div className="flex items-center gap-3">
             <Badge tone="success">{getRoleLabel(user?.role)}</Badge>
             <button
-              className="inline-flex h-9 w-9 items-center justify-center rounded-md text-slate-500 hover:bg-slate-100 hover:text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-200"
+              className="inline-flex h-9 w-9 items-center justify-center rounded-md text-slate-500 hover:bg-slate-100 hover:text-slate-900 focus:outline-none focus:ring-2 focus:ring-red-200"
               onClick={() => {
                 logout()
                 navigate('/login')
@@ -115,8 +115,8 @@ export function ProtectedLayout() {
                 to={item.to}
                 end={item.to === '/'}
                 className={({ isActive }) =>
-                  `inline-flex h-10 shrink-0 items-center gap-2 rounded-md px-3 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-emerald-200 ${
-                    isActive ? 'bg-emerald-50 text-emerald-800' : 'text-slate-600 hover:bg-slate-100'
+                  `inline-flex h-10 shrink-0 items-center gap-2 rounded-md px-3 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-red-200 ${
+                    isActive ? 'bg-red-50 text-red-700' : 'text-slate-600 hover:bg-slate-100'
                   }`
                 }
               >
